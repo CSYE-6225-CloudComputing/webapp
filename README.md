@@ -3,7 +3,7 @@
 ## HealthCheckup Rest API
 
 ### About 
-The health check API allows us to monitor the health of the application instance. It ensures the application is connected to the database or can be connected during the health check.
+The health check API allows us to monitor the health of the application instance. It ensures the application is connected to the database or can be connected during the health check and also check REST API endpoints for users.
 
 ### Prerequisites 📋
 
@@ -51,4 +51,24 @@ To build and deploy the web application locally, follow these steps:
   - If an unsupported HTTP method is used (e.g., POST/PUT/DELETE/OPTION/TRACE/PATCH etc.):
     - **Status**: `405 Method Not Allowed`
     - **Example**: curl -X POST http://localhost:9001/healthz
-  
+
+
+### User API Endpoints
+
+#### 1. Create User
+- **Endpoint:** `/v1/user`
+- **Method:** `POST`
+
+#### 2. Get User Details
+- **Endpoint:** `/v1/user/self`
+- **Method:** `GET`
+
+#### 3. Update User
+- **Endpoint:** `/v1/user/self`
+- **Method:** `PUT`
+
+#### 4. Unsupported Methods for `/v1/user`
+- **Methods:** `GET`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`
+
+#### 5. Unsupported Methods for `/v1/user/self`
+- **Methods:** `POST`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`
