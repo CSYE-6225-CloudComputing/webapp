@@ -94,7 +94,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(path = "/v1/user", method = {RequestMethod.GET, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
+    @RequestMapping(path = "/v1/user", method = {RequestMethod.GET, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.PUT})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public void unSupportedMethods(HttpServletResponse response) {
         logger.error("Unsupported HTTP method");
