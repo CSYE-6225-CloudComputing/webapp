@@ -72,7 +72,7 @@ public class UserControllerTest {
     @Test
     public void testUpdateUserDetails() throws Exception {
         String username = "maal@example.com"; // existing user's email
-        String password = "12378795"; // actual password
+        String password = "12378796"; // actual password
         String base64Credentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
         // JSON content for the update request
