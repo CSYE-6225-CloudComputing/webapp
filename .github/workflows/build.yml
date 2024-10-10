@@ -4,9 +4,10 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:  
 
 jobs:
-  test:
+  test_java_app:
     runs-on: ubuntu-latest
 
     env:
@@ -15,8 +16,15 @@ jobs:
       DB_PASSWORD: root          # MySQL root password
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          architecture: x64
 
       - name: Start MySQL Service
         run: |
@@ -24,12 +32,12 @@ jobs:
 
       - name: Create Database
         run: |
-          # Use the provided root credentials (root/root)
+          
           mysql -u$DB_USER --password=$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
 
       - name: Run Tests
         run: mvn clean install
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/$DB_DATABASE  # MySQL connection URL
-          SPRING_DATASOURCE_USERNAME: $DB_USER  # MySQL username
-          SPRING_DATASOURCE_PASSWORD: $DB_PASSWORD  # MySQL password
+          SPRING_DATASOURCE_USERNAME: $DB_USER  # MySQL username for testing
+          SPRING_DATASOURCE_PASSWORD: $DB_PASSWORD  # MySQL password for testing
