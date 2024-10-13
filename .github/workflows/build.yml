@@ -39,3 +39,23 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/test_db
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
+          
+  packer_fmt_validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Initialize Packer
+        run: packer init .
+        working-directory: packer
+  
+      - name: Packer FMT
+        run: packer fmt -check .
+        working-directory: packer
+  
+      - name: Packer Validate
+        run: packer validate
+        working-directory: packer
+       
