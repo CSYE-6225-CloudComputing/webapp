@@ -47,3 +47,29 @@ replay_pid*
 
 .mvnw*
 *mvn*
+
+
+# Packer build output files
+*.pkr.hcl.out
+packer_cache/
+packer-manifest.json
+*.log
+
+# Variable files (if you use any)
+*.auto.pkrvars.hcl
+*.pkrvars.hcl
+
+# Sensitive environment variable files
+.env
+*.env
+
+# Temporary files
+*.tmp
+*.bak
+
+# Ignore SSH private keys (if accidentally added)
+id_rsa
+id_rsa.pub
+
+# Ignore AWS credentials (if accidentally added)
+.aws
