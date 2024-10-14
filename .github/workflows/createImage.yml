@@ -42,7 +42,7 @@ jobs:
 
       # 5. Upload the WAR file as an artifact
       - name: Upload WAR Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: cloudproject
           path: target/cloudproject-0.0.1-SNAPSHOT.war
