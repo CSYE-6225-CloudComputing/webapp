@@ -32,6 +32,7 @@ variable "aws_devuser" {
   default = "842675991249" # Your AWS account ID for sharing AMIs
 }
 
+
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
   profile         = var.profile
@@ -61,6 +62,11 @@ build {
   sources = [
     "source.amazon-ebs.my-ami"
   ]
+
+  provisioner "file" {
+    source      = "target/cloudproject-0.0.1-SNAPSHOT.war"
+    destination = "/tmp/"
+  }
 
   provisioner "file" {
     source      = "setup.sh"      # Path to your setup.sh file

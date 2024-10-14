@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloud Project Spring Boot Application
+After=network.target
+
+[Service]
+User=csye6225
+Group=csye6225
+Type=simple
+ExecStart=/usr/bin/java -jar /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
