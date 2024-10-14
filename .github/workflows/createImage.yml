@@ -38,7 +38,7 @@ jobs:
              mvn clean package -DskipTests
              pwd
              mkdir stage && cp target/cloudproject-0.0.1-SNAPSHOT.war stage   
-             cp stage/*.jar /home/runner/work/webapp/webapp
+             cp stage/*.war /home/runner/work/webapp/webapp
              cd /home/runner/work/webapp/webapp && ls -all
              
         env:
