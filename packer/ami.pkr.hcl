@@ -64,7 +64,7 @@ build {
   ]
 
   provisioner "file" {
-    source      = ["./target/cloudproject-0.0.1-SNAPSHOT.war"]
+    source      = "./cloudproject-0.0.1-SNAPSHOT.war"
     destination = "/tmp/"
   }
 
