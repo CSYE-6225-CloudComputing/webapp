@@ -55,7 +55,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 7. Setup Packer
+      # 7. Setup Packer fie
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3
         with:
