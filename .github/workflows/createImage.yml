@@ -35,6 +35,7 @@ jobs:
       # 4. Build the application artifact
       - name: Build Maven WAR
         run: mvn clean package -DskipTests
+             pwd
         env:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
