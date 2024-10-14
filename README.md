@@ -15,7 +15,7 @@ Before you begin, ensure you have met the following requirements:
 
 ### Running the Application Locally
 
-To build and deploy the web application locally, follow these steps:
+To build and deploy the web application locally, follow these step:
 
 1. **Clone the repository**: 
    ```bash
