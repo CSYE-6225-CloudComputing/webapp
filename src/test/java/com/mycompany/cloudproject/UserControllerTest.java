@@ -102,7 +102,7 @@ public class UserControllerTest {
                         .header("Authorization", "Basic " + base64Credentials)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.first_name").value("updated"))
+                .andExpect(jsonPath("$.first_name").value("updatedd"))
                 .andExpect(jsonPath("$.last_name").value("updated"));
     }
 

@@ -30,7 +30,7 @@ public class UnitTests {
     @Test
     public void testDeleteUserEndpointMethodNotAllowed() throws Exception {
 
-        mockMvc.perform(delete("/v1/user/self")
+        mockMvc.perform(get("/v1/user/self")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isMethodNotAllowed()); // Expect 405 Method Not Allowed
     }
