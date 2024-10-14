@@ -40,6 +40,7 @@ jobs:
              mkdir stage && cp target/cloudproject-0.0.1-SNAPSHOT.war stage   
              cp stage/*.war /home/runner/work/webapp/webapp
              cd /home/runner/work/webapp/webapp && ls -all
+             cd /home/runner/work/webapp/webapp/stage && ls -all
              
         env:
           DB_URL: ${{ secrets.DB_URL }}
