@@ -87,5 +87,5 @@ jobs:
                        -var "source_ami=${SOURCE_AMI}" \
                        -var "ssh_username=${SSH_USERNAME}" \
                        -var "profile=${PROFILE}" \
-                       -var "aws_devuser=${AWS_DEVUSER}"
+                       -var "aws_devuser=${AWS_DEVUSER}" .
         working-directory: ./packer
