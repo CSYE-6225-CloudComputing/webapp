@@ -41,7 +41,6 @@ CREATE DATABASE $DATABASE_NAME;
 CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$NEW_PASSWORD';
 GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DB_USER'@'localhost';
 FLUSH PRIVILEGES;
-EXIT;
 EOF
 
 echo 'MySQL user and database setup completed successfully.'
@@ -86,6 +85,7 @@ sudo systemctl enable csye6225.service
 
 # Check the status of the service
 sudo systemctl status csye6225.service
+sudo journalctl -xeu csye6225.service
 
 
 
