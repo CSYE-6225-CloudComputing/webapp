@@ -18,6 +18,9 @@ jobs:
       PROFILE: ${{ secrets.PROFILE }}
       AWS_DEVUSER: ${{ secrets.AWS_DEVUSER }}
       AWS_REGION: us-east-1
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       # 1. Checkout the repository
@@ -87,5 +90,8 @@ jobs:
                        -var "source_ami=${SOURCE_AMI}" \
                        -var "ssh_username=${SSH_USERNAME}" \
                        -var "profile=${PROFILE}" \
+                       -var "db_url=${DB_URL}" \
+                       -var "db_username=${DB_USERNAME}" \
+                       -var "db_password=${DB_PASSWORD}" \
                        -var "aws_devuser=${AWS_DEVUSER}" .
         working-directory: ./packer

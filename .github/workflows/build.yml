@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_DATABASE: test_db
-      DB_USER: root
-      DB_PASSWORD: root
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - name: Checkout repository
@@ -31,11 +31,11 @@ jobs:
 
       - name: Create Database
         run: |
-          mysql -u$DB_USER --password=$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+          mysql -u"$DB_USERNAME" --password="$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS cloud;" # Change to your DB name
 
       - name: Run Tests
         run: mvn clean install
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/test_db
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: root
+          SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
