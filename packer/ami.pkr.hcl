@@ -69,10 +69,12 @@ build {
   }
 
 
+   # Copy the csye6225.service file
   provisioner "file" {
-    source      = "javaapplication.sh"
-    destination = "/tmp/javaapplication.sh"
+    source      = "csye6225.service"
+    destination = "/tmp/csye6225.service"
   }
+
 
   provisioner "file" {
     source      = "setup.sh"      # Path to your setup.sh file

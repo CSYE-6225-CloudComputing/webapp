@@ -73,6 +73,21 @@ sudo chmod 600 /opt/cloudproject/.env  # Secure the file by restricting access
 echo '.env file created and moved to /opt/cloudproject/.env'
 
 
+# Copy csye6225.service file and configure systemd
+echo 'Setting up csye6225 service'
+sudo cp /tmp/csye6225.service /etc/systemd/system/
+
+# Reload systemd to pick up the changes
+sudo systemctl daemon-reload
+
+# Start and enable csye6225 service
+sudo systemctl start csye6225.service
+sudo systemctl enable csye6225.service
+
+# Check the status of the service
+sudo systemctl status csye6225.service
+
+
 
 # Clean up
 echo 'Cleaning up...'
