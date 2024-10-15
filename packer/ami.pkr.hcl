@@ -32,6 +32,22 @@ variable "aws_devuser" {
   default = "842675991249" # Your AWS account ID for sharing AMIs
 }
 
+variable "database" {
+  type    = string
+  default = "cloud"
+}
+
+variable "user" {
+  type    = string
+  default = "raut"
+}
+
+variable "password" {
+  type    = string
+  default = "root"
+}
+
+
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
