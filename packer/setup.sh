@@ -19,8 +19,8 @@ sudo apt-get install -y mysql-server
 echo 'Installed MySQL Server successfully.'
 
 # Start and enable MySQL service
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
+sudo systemctl start mysql
+sudo systemctl enable mysql
 
 # Set root password for MySQL and secure installation
 echo "Setting MySQL root password and securing installation"
@@ -57,8 +57,22 @@ sudo useradd -g csye6225 --shell /usr/sbin/nologin csye6225
 # Change ownership of the necessary directories/files
 echo 'Changing ownership of application files to csye6225 user and group'
 sudo mkdir -p /opt/cloudproject
-mv /tmp/cloudproject-0.0.1-SNAPSHOT.war /opt/cloudproject
+sudo mv /tmp/cloudproject-0.0.1-SNAPSHOT.war /opt/cloudproject
 sudo chown -R csye6225:csye6225 /opt/cloudproject
+sudo chmod 755 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
+
+
+echo "DB_URL='$DB_URL'" > /opt/cloudproject/.env
+echo "DB_USERNAME='$DB_USERNAME'" >> /opt/cloudproject/.env
+echo "DB_PASSWORD='$DB_PASSWORD'" >> /opt/cloudproject/.env
+
+# Change ownership and restrict access to the .env file
+sudo chown csye6225:csye6225 /opt/cloudproject/.env
+sudo chmod 600 /opt/cloudproject/.env  # Secure the file by restricting access
+
+echo '.env file created and moved to /opt/cloudproject/.env'
+
+
 
 # Clean up
 echo 'Cleaning up...'
