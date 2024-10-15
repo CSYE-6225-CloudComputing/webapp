@@ -28,7 +28,7 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
 # Login to MySQL as root and create user and database
 echo 'Setting up MySQL user and database'
-NEW_PASSWORD=${password}  # Change this to your desired password
+NEW_PASSWORD=${password} # Change this to your desired password
 DATABASE_NAME=${database}  # Change this to your desired database name
 DB_USER=${user}          # Change this to your desired database username
 
@@ -58,9 +58,9 @@ sudo chown -R csye6225:csye6225 /opt/cloudproject
 sudo chmod 755 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 
 # Define your database URL and credentials
-DB_URL="jdbc:mysql://localhost:3306/cloud"  
-DB_USERNAME="raut"                           
-DB_PASSWORD="root"                           
+DB_URL="jdbc:mysql://localhost:3306/${DATABASE_NAME}"  
+DB_USERNAME="${DB_USER}"                           
+DB_PASSWORD="${NEW_PASSWORD}"                        
 
 
 # Create .env file with DB properties
