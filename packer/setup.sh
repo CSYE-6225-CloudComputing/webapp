@@ -28,9 +28,15 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
 # Login to MySQL as root and create user and database
 echo 'Setting up MySQL user and database'
-NEW_PASSWORD=${password}  # Change this to your desired password
-DATABASE_NAME=${database}  # Change this to your desired database name
-DB_USER=${user}          # Change this to your desired database username
+NEW_PASSWORD="${password}"  # Change this to your desired password
+DATABASE_NAME="${database}"  # Change this to your desired database name
+DB_USER="${user}"          # Change this to your desired database username
+
+
+echo "Database Name: $DATABASE_NAME"
+echo "Database User: $DB_USER"
+echo "Database Password: $NEW_PASSWORD"
+
 
 # Create user and database
 sudo mysql -u root -proot -e "
