@@ -63,15 +63,24 @@ build {
     "source.amazon-ebs.my-ami"
   ]
 
- provisioner "file" {
-  source      = "/home/runner/work/webapp/webapp/target/cloudproject-0.0.1-SNAPSHOT.war"
-  destination = "/tmp/"
-}
+  provisioner "file" {
+    source      = "/home/runner/work/webapp/webapp/target/cloudproject-0.0.1-SNAPSHOT.war"
+    destination = "/tmp/"
+  }
 
+
+  provisioner "file" {
+    source      = "javaapplication.sh"
+    destination = "/tmp/javaapplication.sh"
+  }
 
   provisioner "file" {
     source      = "setup.sh"      # Path to your setup.sh file
     destination = "/tmp/setup.sh" # Where to place the script on the instance
+  }
+
+  provisioner "shell" {
+    script = "javaapplication.sh"
   }
 
   provisioner "shell" {
