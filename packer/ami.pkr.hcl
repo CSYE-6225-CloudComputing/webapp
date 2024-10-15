@@ -81,9 +81,6 @@ build {
     destination = "/tmp/setup.sh" # Where to place the script on the instance
   }
 
-  provisioner "shell" {
-    script = "javaapplication.sh"
-  }
 
   provisioner "shell" {
     inline = [
