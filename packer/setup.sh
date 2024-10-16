@@ -26,13 +26,13 @@ sudo systemctl enable mysql
 echo "Setting MySQL root password"
 sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
-# Login to MySQL as root and create user and database
-echo 'Setting up MySQL user and database'
-NEW_PASSWORD='${password}'
-DATABASE_NAME='${database}'
-DB_USER='${user}'
 
+# Access environment variables correctly
+NEW_PASSWORD=$NEW_PASSWORD   # No single quotes, just the variable name
+DATABASE_NAME=$DATABASE_NAME  # Same here
+DB_USER=$DB_USER              # And here
 
+# Display the variables
 echo "Database Name: '$DATABASE_NAME'"
 echo "Database User: $DB_USER"
 echo "Database Password: '$NEW_PASSWORD'"
