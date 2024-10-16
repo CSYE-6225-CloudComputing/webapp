@@ -114,6 +114,9 @@ public class UserService {
         //check if user already exists or not
         User existinguser = userDAO.checkExistingUser(email);
 
+        if(userDTO.getEmail()==null && !email.equals(userDTO.getEmail()))
+                 throw new UserCustomExceptions("Bad Request");
+
         if (existinguser == null || !EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
