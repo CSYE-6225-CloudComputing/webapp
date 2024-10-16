@@ -28,9 +28,9 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
 
 # Access environment variables correctly
-NEW_PASSWORD=$NEW_PASSWORD   # No single quotes, just the variable name
-DATABASE_NAME=$DATABASE_NAME  # Same here
-DB_USER=$DB_USER              # And here
+NEW_PASSWORD=$NEW_PASSWORD
+DATABASE_NAME=$DATABASE_NAME
+DB_USER=$DB_USER 
 
 # Display the variables
 echo "Database Name: '$DATABASE_NAME'"
@@ -38,8 +38,10 @@ echo "Database User: $DB_USER"
 echo "Database Password: '$NEW_PASSWORD'"
 
 
-# Create user and database
+# Login to MySQL and create the database and user
 sudo mysql -u root -proot -e "
+DROP USER IF EXISTS '$DB_USER'@'localhost';
+DROP DATABASE IF EXISTS $DATABASE_NAME;
 CREATE DATABASE $DATABASE_NAME;
 CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$NEW_PASSWORD';
 GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DB_USER'@'localhost';
