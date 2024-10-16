@@ -35,6 +35,13 @@ jobs:
 
       - name: Run Tests
         run: mvn clean install
+             pwd
+             mkdir merge && cp target/cloudproject-0.0.1-SNAPSHOT.war merge   
+             cp merge/*.war /home/runner/work/webapp/webapp
+             cd /home/runner/work/webapp/webapp && ls -all
+             cd /home/runner/work/webapp/webapp/merge && ls -all
+             cd /home/runner/work/webapp/webapp/target && ls -all
+
         env:
           SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ env.DB_DATABASE }}"
           SPRING_DATASOURCE_USERNAME: "${{ env.DB_USER }}"
