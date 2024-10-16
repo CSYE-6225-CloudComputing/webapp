@@ -35,7 +35,7 @@ DB_USER='${user}'
 
 echo "Database Name: '$DATABASE_NAME'"
 echo "Database User: $DB_USER"
-echo "Database Password: "$NEW_PASSWORD""
+echo "Database Password: '$NEW_PASSWORD'"
 
 
 # Create user and database

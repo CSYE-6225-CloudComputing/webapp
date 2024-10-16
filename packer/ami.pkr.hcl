@@ -99,6 +99,11 @@ build {
 
 
   provisioner "shell" {
+	environment_vars = [
+      "NEW_PASSWORD=${var.password}",
+      "DATABASE_NAME=${var.database}",
+      "DB_USER=${var.user}"
+    ]
     inline = [
       "chmod +x /tmp/setup.sh", # Make the script executable
       "/tmp/setup.sh"           # Execute the script
