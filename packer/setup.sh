@@ -40,6 +40,8 @@ echo "Database Password: '$NEW_PASSWORD'"
 
 # Create user and database
 sudo mysql -u root -proot -e "
+DROP USER IF EXISTS '$DB_USER'@'localhost';
+DROP DATABASE IF EXISTS $DATABASE_NAME;
 CREATE DATABASE $DATABASE_NAME;
 CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$NEW_PASSWORD';
 GRANT ALL PRIVILEGES ON $DATABASE_NAME.* TO '$DB_USER'@'localhost';
