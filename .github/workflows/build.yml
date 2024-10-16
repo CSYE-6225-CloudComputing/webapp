@@ -31,11 +31,43 @@ jobs:
 
       - name: Create Database
         run: |
-          mysql -u$DB_USER --password=$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+          mysql -u"$DB_USER" --password="$DB_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
 
       - name: Run Tests
-        run: mvn clean install
+        run: |
+             mvn clean package
+             pwd
+             mkdir stage && cp target/cloudproject-0.0.1-SNAPSHOT.war stage   
+             cp stage/*.war /home/runner/work/webapp/webapp
+             cd /home/runner/work/webapp/webapp && ls -all
+             cd /home/runner/work/webapp/webapp/stage && ls -all
+             cd /home/runner/work/webapp/webapp/target && ls -all
+
         env:
           SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ env.DB_DATABASE }}"
           SPRING_DATASOURCE_USERNAME: "${{ env.DB_USER }}"
           SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}"
+
+  packer_fmt_validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@v3
+        with:
+          version: 'latest'
+
+      - name: Initialize Packer
+        run: packer init .
+        working-directory: ./packer
+
+      - name: Packer FMT
+        run: packer fmt -check .
+        working-directory: ./packer
+
+      - name: Packer Validate
+        run: packer validate .
+        working-directory: ./packer
