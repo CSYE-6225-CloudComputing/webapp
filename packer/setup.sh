@@ -66,9 +66,9 @@ sudo chown -R csye6225:csye6225 /opt/cloudproject
 sudo chmod 755 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 
 # Define your database URL and credentials
-DB_URL="jdbc:mysql://localhost:3306/cloud"  
-DB_USERNAME="raut"                           
-DB_PASSWORD="root"                           
+DB_URL="jdbc:mysql://localhost:3306/$DATABASE_NAME"  
+DB_USERNAME="$DB_USER"                          
+DB_PASSWORD="$NEW_PASSWORD"                         
 
 
 # Create .env file with DB properties
@@ -78,7 +78,7 @@ echo "DB_PASSWORD='$DB_PASSWORD'" | sudo tee -a /opt/cloudproject/.env > /dev/nu
 
 # Change ownership and restrict access to the .env file
 sudo chown csye6225:csye6225 /opt/cloudproject/.env
-sudo chmod 755 /opt/cloudproject/.env  # Secure the file by restricting access
+sudo chmod 775 /opt/cloudproject/.env  # Secure the file by restricting access
 
 echo '.env file created and moved to /opt/cloudproject/.env'
 
