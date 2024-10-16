@@ -80,12 +80,12 @@ build {
   ]
 
   provisioner "file" {
-    source      = "/home/runner/work/webapp/webapp/target/cloudproject-0.0.1-SNAPSHOT.war"
+    source      = "../target/cloudproject-0.0.1-SNAPSHOT.war"
     destination = "/tmp/"
   }
 
 
-   # Copy the csye6225.service file
+  # Copy the csye6225.service file
   provisioner "file" {
     source      = "csye6225.service"
     destination = "/tmp/csye6225.service"
@@ -99,7 +99,7 @@ build {
 
 
   provisioner "shell" {
-	environment_vars = [
+    environment_vars = [
       "NEW_PASSWORD=${var.password}",
       "DATABASE_NAME=${var.database}",
       "DB_USER=${var.user}"
