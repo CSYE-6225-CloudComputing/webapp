@@ -12,6 +12,8 @@ import com.mycompany.cloudproject.utilities.TokenUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -113,6 +115,10 @@ public class UserService {
         logger.info("UPDATE request : checking existing user");
         //check if user already exists or not
         User existinguser = userDAO.checkExistingUser(email);
+
+        if(userDTO.getEmail()!= null && userDTO.getEmail().equals(email))
+         throw new UserCustomExceptions("Bad Request");
+    
 
         if (existinguser == null || !EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             throw new UnAuthorizedException("Error occurred while validating credentials");
