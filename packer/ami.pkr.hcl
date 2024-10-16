@@ -19,17 +19,17 @@ variable "source_ami" {
 
 variable "ssh_username" {
   type    = string
-  default = "ubuntu" # Default SSH username for Ubuntu AMIs
+  default = "ubuntu"
 }
 
 variable "profile" {
   type    = string
-  default = "dev" # Your AWS CLI profile name
+  default = "dev"
 }
 
 variable "aws_devuser" {
   type    = string
-  default = "842675991249" # Your AWS account ID for sharing AMIs
+  default = "842675991249"
 }
 
 variable "database" {
@@ -47,6 +47,20 @@ variable "password" {
   default = "root"
 }
 
+variable "vpc_id" {
+  type    = string
+  default = "vpc-02a9166f3d342c7a9"
+}
+
+variable "subnet_id" {
+  type    = string
+  default = "subnet-046ddba93e36d2434"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
 
 
 source "amazon-ebs" "my-ami" {
@@ -62,9 +76,13 @@ source "amazon-ebs" "my-ami" {
     max_attempts  = 50
   }
 
-  instance_type = "t2.micro"
-  source_ami    = var.source_ami
-  ssh_username  = var.ssh_username
+  vpc_id                      = var.vpc_id
+  subnet_id                   = var.subnet_id
+  instance_type               = var.instance_type
+  source_ami                  = var.source_ami
+  ssh_username                = var.ssh_username
+  associate_public_ip_address = true
+
 
   launch_block_device_mappings {
     delete_on_termination = true
@@ -85,7 +103,7 @@ build {
   }
 
 
-   # Copy the csye6225.service file
+  # Copy the csye6225.service file
   provisioner "file" {
     source      = "csye6225.service"
     destination = "/tmp/csye6225.service"
@@ -93,13 +111,13 @@ build {
 
 
   provisioner "file" {
-    source      = "setup.sh"      # Path to your setup.sh file
+    source      = "setup.sh"      # setup.sh file
     destination = "/tmp/setup.sh" # Where to place the script on the instance
   }
 
 
   provisioner "shell" {
-	environment_vars = [
+    environment_vars = [
       "NEW_PASSWORD=${var.password}",
       "DATABASE_NAME=${var.database}",
       "DB_USER=${var.user}"

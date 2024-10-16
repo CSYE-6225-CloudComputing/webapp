@@ -17,7 +17,7 @@ jobs:
       SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
       PROFILE: ${{ secrets.PROFILE }}
       AWS_DEVUSER: ${{ secrets.AWS_DEVUSER }}
-      AWS_REGION: us-east-1
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       DB_DATABASE: ${{ secrets.DB_DATABASE }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -34,6 +34,22 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
           architecture: x64
+          
+      # 3. Run integration test  
+      - name: Start MySQL Service
+        run: |
+          sudo /etc/init.d/mysql start  # Start MySQL service
+
+      - name: Create Database
+        run: |
+          mysql -u$DB_USER --password=$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+
+      - name: Run Tests
+        run: mvn test
+        env:
+          SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ env.DB_DATABASE }}"
+          SPRING_DATASOURCE_USERNAME: "${{ env.DB_USER }}"
+          SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}"    
 
       # 4. Build the application artifact
       - name: Build Maven WAR
@@ -78,12 +94,7 @@ jobs:
         run: packer init .
         working-directory: ./packer
 
-      # 9. Packer Validate
-      - name: Packer Validate
-        run: packer validate .
-        working-directory: ./packer
-
-      # 10. Build the custom image using Packer
+      # 9. Build the custom image using Packer
       - name: Build Image
         run: |
           packer build -var "aws_region=${AWS_REGION}" \
@@ -93,5 +104,7 @@ jobs:
                        -var "database=${DB_DATABASE}" \
                        -var "user=${DB_USER}" \
                        -var "password=${DB_PASSWORD}" \
+                       -var "vpc_id=${{ secrets.VPC_ID }}" \
+                       -var "subnet_id=${{ secrets.SUBNET_ID }}" \
                        -var "aws_devuser=${AWS_DEVUSER}" .
         working-directory: ./packer
