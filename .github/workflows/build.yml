@@ -27,15 +27,34 @@ jobs:
 
       - name: Start MySQL Service
         run: |
-          sudo /etc/init.d/mysql start  # Start MySQL service
+          sudo systemctl start mysql  # Use systemd to start MySQL
 
-      - name: Create Database
+      - name: Wait for MySQL to be ready
         run: |
-          mysql -u$DB_USER --password=$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+          until mysqladmin ping; do echo "Waiting for MySQL..."; sleep 5; done
+
+      - name: Debug MySQL Users
+        run: |
+          sudo mysql -u root -proot -e "SELECT user, host FROM mysql.user;"
+
+      - name: Create Database with Root
+        run: |
+          sudo mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;"
+        env:
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
+      - name: Grant Permissions to Non-root User
+        run: |
+          sudo mysql -u root -proot -e "
+          GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+          FLUSH PRIVILEGES;"
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: Run Tests
         run: mvn clean install
         env:
-          SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ env.DB_DATABASE }}"
-          SPRING_DATASOURCE_USERNAME: "${{ env.DB_USER }}"
-          SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}"
+          SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ secrets.DB_DATABASE }}"
+          SPRING_DATASOURCE_USERNAME: "${{ secrets.DB_USER }}"
+          SPRING_DATASOURCE_PASSWORD: "${{ secrets.DB_PASSWORD }}"
