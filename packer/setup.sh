@@ -28,9 +28,9 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
 
 # Access environment variables correctly
-NEW_PASSWORD=$NEW_PASSWORD   # No single quotes, just the variable name
-DATABASE_NAME=$DATABASE_NAME  # Same here
-DB_USER=$DB_USER              # And here
+NEW_PASSWORD=$NEW_PASSWORD
+DATABASE_NAME=$DATABASE_NAME
+DB_USER=$DB_USER
 
 # Display the variables
 echo "Database Name: '$DATABASE_NAME'"
@@ -65,7 +65,7 @@ sudo mv /tmp/cloudproject-0.0.1-SNAPSHOT.war /opt/cloudproject
 sudo chown -R csye6225:csye6225 /opt/cloudproject
 sudo chmod 755 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 
-# Define your database URL and credentials
+# Define database URL and credentials
 DB_URL="jdbc:mysql://localhost:3306/$DATABASE_NAME"  
 DB_USERNAME="$DB_USER"                          
 DB_PASSWORD="$NEW_PASSWORD"                         
