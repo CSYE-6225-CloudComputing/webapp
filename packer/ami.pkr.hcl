@@ -62,6 +62,11 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
+variable "aws_demouser" {
+  type    = string
+  default = "977099022616"
+}
+
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
@@ -69,7 +74,7 @@ source "amazon-ebs" "my-ami" {
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
   ami_regions     = [var.aws_region]
-  ami_users       = [var.aws_devuser]
+  ami_users       = [var.aws_devuser,var.aws_demouser]
 
   aws_polling {
     delay_seconds = 120

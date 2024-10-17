@@ -27,10 +27,10 @@ echo "Setting MySQL root password"
 sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"
 
 
-# Access environment variables correctly
-NEW_PASSWORD=$NEW_PASSWORD   # No single quotes, just the variable name
-DATABASE_NAME=$DATABASE_NAME  # Same here
-DB_USER=$DB_USER              # And here
+# Access environment variables
+NEW_PASSWORD=$NEW_PASSWORD
+DATABASE_NAME=$DATABASE_NAME
+DB_USER=$DB_USER
 
 # Display the variables
 echo "Database Name: '$DATABASE_NAME'"
@@ -81,7 +81,6 @@ sudo chown csye6225:csye6225 /opt/cloudproject/.env
 sudo chmod 775 /opt/cloudproject/.env  # Secure the file by restricting access
 
 echo '.env file created and moved to /opt/cloudproject/.env'
-
 
 
 # Copy csye6225.service file and configure systemd
