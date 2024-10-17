@@ -21,6 +21,7 @@ jobs:
       DB_DATABASE: ${{ secrets.DB_DATABASE }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      AWS_DEMOUSER: ${{ secrets.AWS_DEMOUSER }}
 
     steps:
       # 1. Checkout the repository
@@ -110,5 +111,6 @@ jobs:
                        -var "database=${DB_DATABASE}" \
                        -var "user=${DB_USER}" \
                        -var "password=${DB_PASSWORD}" \
+                       -var "aws_demouser=${AWS_DEMOUSER}" \
                        -var "aws_devuser=${AWS_DEVUSER}" .
         working-directory: ./packer
