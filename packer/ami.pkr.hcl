@@ -84,7 +84,7 @@ source "amazon-ebs" "my-ami" {
   associate_public_ip_address = true
   vpc_id                      = "${var.vpc_id}"
   subnet_id                   = "${var.subnet_id}"
-  instance_type               = var.instance_type
+  instance_type               = "${var.instance_type}"
   source_ami                  = "${var.source_ami}"
   ssh_username                = "${var.ssh_username}"
 
