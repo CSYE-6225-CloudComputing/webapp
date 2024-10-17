@@ -57,11 +57,11 @@ jobs:
         run: |
              mvn clean package -DskipTests
              pwd
-             rm -rf stage
-             mkdir stage && cp target/cloudproject-0.0.1-SNAPSHOT.war stage   
-             cp stage/*.war /home/runner/work/webapp/webapp
+             rm -rf imgbuild
+             mkdir imgbuild && cp target/cloudproject-0.0.1-SNAPSHOT.war imgbuild   
+             cp imgbuild/*.war /home/runner/work/webapp/webapp
              cd /home/runner/work/webapp/webapp && ls -all
-             cd /home/runner/work/webapp/webapp/stage && ls -all
+             cd /home/runner/work/webapp/webapp/imgbuild && ls -all
              cd /home/runner/work/webapp/webapp/target && ls -all
              
              

@@ -69,23 +69,25 @@ variable "aws_demouser" {
 
 
 source "amazon-ebs" "my-ami" {
-  region          = var.aws_region
+  region          = "${var.aws_region}"
+  profile         = "${var.profile}"
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
-  ami_description = "AMI for CSYE 6225"
-  ami_regions     = [var.aws_region]
-  ami_users       = [var.aws_devuser, var.aws_demouser]
+  ami_description = "AMI for CSYE 6225 2024"
+  ami_regions     = ["${var.aws_region}"]
+  ami_users       = ["${var.aws_devuser}", "${var.aws_demouser}"]
 
   aws_polling {
     delay_seconds = 120
-    max_attempts  = 50
+    max_attempts  = 40
   }
 
+  associate_public_ip_address = true
   vpc_id                      = var.vpc_id
   subnet_id                   = var.subnet_id
   instance_type               = var.instance_type
-  source_ami                  = var.source_ami
-  ssh_username                = var.ssh_username
-  associate_public_ip_address = true
+  source_ami                  = "${var.source_ami}"
+  ssh_username                = "${var.ssh_username}"
+
 
 
   launch_block_device_mappings {
