@@ -22,6 +22,8 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       AWS_DEMOUSER: ${{ secrets.AWS_DEMOUSER }}
+      VPC_SUBNET_ID: ${{ secrets.VPC_SUBNET_ID }}
+      VPC_ID: ${{ secrets.VPC_ID }}
 
     steps:
       # 1. Checkout the repository
@@ -112,5 +114,7 @@ jobs:
                        -var "user=${DB_USER}" \
                        -var "password=${DB_PASSWORD}" \
                        -var "aws_demouser=${AWS_DEMOUSER}" \
+                       -var "subnet_id=${VPC_SUBNET_ID}" \
+                       -var "vpc_id=${VPC_ID}" \
                        -var "aws_devuser=${AWS_DEVUSER}" .
         working-directory: ./packer
