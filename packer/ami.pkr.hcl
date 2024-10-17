@@ -70,7 +70,6 @@ variable "aws_demouser" {
 
 source "amazon-ebs" "my-ami" {
   region          = var.aws_region
-  profile         = var.profile
   ami_name        = "csye6225_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
   ami_description = "AMI for CSYE 6225"
   ami_regions     = [var.aws_region]
