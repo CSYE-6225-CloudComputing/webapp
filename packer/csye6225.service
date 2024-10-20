@@ -7,7 +7,7 @@ User=csye6225
 Group=csye6225
 Type=simple
 # Load environment variables from the .env file
-EnvironmentFile=/opt/cloudproject/.env
+EnvironmentFile=/etc/environment
 ExecStart=/usr/lib/jvm/java-21-openjdk-amd64/bin/java -jar /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 Restart=always
 Environment=JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
