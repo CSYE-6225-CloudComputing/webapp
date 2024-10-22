@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @PostMapping("/v1/user")
+    @PostMapping("/v2/user")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("POST: Request received");
         setResponseHeaders(response);
