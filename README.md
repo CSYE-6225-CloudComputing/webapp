@@ -10,7 +10,7 @@ The health check API allows us to monitor the health of the application instance
 Before you begin, ensure you have met the following requirements:
 
 - JDK 21 is installed on your machine 
-- MySQL Server installed and running 
+- MySQL Server installed and running. 
 - Maven is installed
 
 ### Running the Application Locally
