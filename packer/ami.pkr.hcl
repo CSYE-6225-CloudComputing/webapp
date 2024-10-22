@@ -77,7 +77,7 @@ source "amazon-ebs" "my-ami" {
   ami_users       = ["${var.aws_devuser}", "${var.aws_demouser}"]
 
   aws_polling {
-    delay_seconds = 120
+    delay_seconds =    120
     max_attempts  = 40
   }
 
