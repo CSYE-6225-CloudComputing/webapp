@@ -63,7 +63,7 @@ echo 'Changing ownership of application files to csye6225 user and group'
 sudo mkdir -p /opt/cloudproject
 sudo mv /tmp/cloudproject-0.0.1-SNAPSHOT.war /opt/cloudproject
 sudo chown -R csye6225:csye6225 /opt/cloudproject
-sudo chmod 755 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
+sudo chmod 655 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 
 # Define database URL and credentials
 # DB_URL="jdbc:mysql://localhost:3306/$DATABASE_NAME"  
