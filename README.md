@@ -17,7 +17,7 @@ Before you begin, ensure you have met the following requirements:
 
 To build and deploy the web application locally, follow these steps:
 
-1. **Clone the repository**: 
+1. **Clone the main repository**: 
    ```bash
    git clone git@github.com:cloud-computing-csye6225-neu/webapp.git
    ```   
