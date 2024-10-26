@@ -20,7 +20,7 @@ sudo apt-get update -y
 sleep 10
 
 echo 'Installing aws cloudwatch'
-sudo apt install -y amazon-cloudwatch-agent
+sudo yum install amazon-cloudwatch-agent -y
 echo 'Installed aws cloudwatch'
 
 
