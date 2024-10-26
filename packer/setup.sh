@@ -14,6 +14,17 @@ sudo apt-get install -y maven
 echo 'Installed Maven successfully.'
 mvn -version
 
+
+echo 'Updating Packages'
+sudo apt-get update -y
+sleep 10
+
+echo 'Installing aws cloudwatch'
+sudo apt install -y amazon-cloudwatch-agent
+echo 'Installed aws cloudwatch'
+
+
+
 # echo 'Installing MySQL Server'
 # sudo apt-get install -y mysql-server
 # echo 'Installed MySQL Server successfully.'
