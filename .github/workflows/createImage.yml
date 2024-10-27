@@ -50,7 +50,9 @@ jobs:
         env:
           SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/${{ env.DB_DATABASE }}"
           SPRING_DATASOURCE_USERNAME: "${{ env.DB_USER }}"
-          SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}"        
+          SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}" 
+          AWS_S3_BUCKET: "mock-bucket"
+          AWS_S3_REGION: "us-east-1"       
 
       # 4. Build the application artifact
       - name: Build Maven WAR
