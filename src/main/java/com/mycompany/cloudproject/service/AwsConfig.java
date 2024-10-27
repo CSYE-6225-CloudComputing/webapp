@@ -1,7 +1,7 @@
 package com.mycompany.cloudproject.service;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
@@ -21,9 +21,9 @@ public class AwsConfig {
     public AmazonS3 s3client() {
 
 
-        AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
+       AmazonS3 amazonS3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(new DefaultAWSCredentialsProviderChain())
+                .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();
         return amazonS3Client;
     }
