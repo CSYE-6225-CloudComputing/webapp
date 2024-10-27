@@ -18,6 +18,9 @@ target/
 *.iws
 *.iml
 *.ipr
+*.vscode
+*.vscode.*
+*.vscode/settings.json
 
 # Compiled class file
 *.class

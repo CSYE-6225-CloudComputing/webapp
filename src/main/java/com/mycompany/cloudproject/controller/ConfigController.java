@@ -1,6 +1,6 @@
 package com.mycompany.cloudproject.controller;
 
-import com.mycompany.cloudproject.dao.DBConfiguration;
+
 import com.mycompany.cloudproject.service.ConfigService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,12 +65,7 @@ public class ConfigController {
         setResponseHeaders(response);
     }
 
-    @RequestMapping(path = "/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void wrongURL(HttpServletResponse response) {
-        logger.error("wrong URL");
-        setResponseHeaders(response);
-    }
+  
 
 
 }

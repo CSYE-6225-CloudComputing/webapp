@@ -37,6 +37,11 @@ public class CustomErrorHandler {
         return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIncorrectImageType(Exception ex) {
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<Void> handleUnAuthorizedException(UnAuthorizedException ex) {
