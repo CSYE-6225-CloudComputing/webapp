@@ -20,7 +20,9 @@ sudo apt-get update -y
 sleep 10
 
 echo 'Installing aws cloudwatch'
-sudo yum install amazon-cloudwatch-agent -y
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+rm amazon-cloudwatch-agent.deb"
 echo 'Installed aws cloudwatch'
 
 
@@ -102,6 +104,8 @@ sudo cp /tmp/csye6225.service /etc/systemd/system/
 # Reload systemd to pick up the changes
 sudo systemctl enable csye6225.service
 sudo systemctl daemon-reload
+sudo systemctl enable amazon-cloudwatch-agent
+sudo systemctl start amazon-cloudwatch-agent
 
 # Start and enable csye6225 service
 # sudo systemctl start csye6225.service
