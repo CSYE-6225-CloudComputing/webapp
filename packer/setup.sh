@@ -15,17 +15,12 @@ echo 'Installed Maven successfully.'
 mvn -version
 
 
-echo 'Updating Packages'
-sudo apt-get update -y
-sleep 10
-
-echo 'Installing aws cloudwatch'
-wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+# Install AWS CloudWatch Agent
+echo 'Installing AWS CloudWatch Agent'
+sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-rm amazon-cloudwatch-agent.deb"
-echo 'Installed aws cloudwatch'
-
-
+rm amazon-cloudwatch-agent.deb
+echo 'Installed AWS CloudWatch Agent successfully.'
 
 # echo 'Installing MySQL Server'
 # sudo apt-get install -y mysql-server
@@ -101,11 +96,13 @@ sudo chmod 655 /opt/cloudproject/cloudproject-0.0.1-SNAPSHOT.war
 echo 'Setting up csye6225 service'
 sudo cp /tmp/csye6225.service /etc/systemd/system/
 
+sudo chmod 774 /tmp/cloudwatch.json
+sudo mv /tmp/cloudwatch.json /opt/aws/amazon-cloudwatch-agent/cloudwatch.json
+
+
 # Reload systemd to pick up the changes
 sudo systemctl enable csye6225.service
 sudo systemctl daemon-reload
-sudo systemctl enable amazon-cloudwatch-agent
-sudo systemctl start amazon-cloudwatch-agent
 
 # Start and enable csye6225 service
 # sudo systemctl start csye6225.service

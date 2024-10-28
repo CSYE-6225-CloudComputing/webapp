@@ -109,6 +109,12 @@ build {
   }
 
 
+   provisioner "file" {
+    source      = "cloudwatch.json"
+    destination = "/tmp/cloudwatch.json"
+  }
+
+
   # Copy the csye6225.service file
   provisioner "file" {
     source      = "csye6225.service"
