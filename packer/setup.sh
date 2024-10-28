@@ -98,11 +98,17 @@ sudo cp /tmp/csye6225.service /etc/systemd/system/
 
 sudo chmod 774 /tmp/cloudwatch.json
 sudo mv /tmp/cloudwatch.json /opt/aws/amazon-cloudwatch-agent/cloudwatch.json
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl  -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/cloudwatch.json -s
+
 
 
 # Reload systemd to pick up the changes
 sudo systemctl enable csye6225.service
 sudo systemctl daemon-reload
+
+sudo systemctl start amazon-cloudwatch-agent
+sudo systemctl enable amazon-cloudwatch-agent
+
 
 # Start and enable csye6225 service
 # sudo systemctl start csye6225.service
