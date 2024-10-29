@@ -4,12 +4,10 @@ import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.model.UserToken;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class TokenUtility {
 

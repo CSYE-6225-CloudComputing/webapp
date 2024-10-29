@@ -1,7 +1,6 @@
 package com.mycompany.cloudproject;
 
 import com.mycompany.cloudproject.dto.UserDTO;
-import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;

@@ -1,7 +1,8 @@
 package com.mycompany.cloudproject.controller;
 
-import com.mycompany.cloudproject.dao.DBConfiguration;
 import com.mycompany.cloudproject.service.ConfigService;
+import com.timgroup.statsd.StatsDClient;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -20,34 +21,47 @@ public class ConfigController {
     @Autowired
     ConfigService service;
 
+    @Autowired
+    private StatsDClient statsd;
+
     @GetMapping("/healthz")
     @ResponseBody
-    public ResponseEntity<String> getConfig(@RequestBody(required = false) String payload, HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<String> getConfig(@RequestBody(required = false) String payload, HttpServletResponse response,
+            HttpServletRequest request) {
 
         setResponseHeaders(response);
-        if (payload != null && !payload.isEmpty()) {
-            logger.info("Payload is not supported. Bad Request");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if (request.getContentLength() > 0) {
-            logger.info("Payload is not supported. Bad Request");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if (request.getHeader("Authorization") != null) {
-            logger.info("Authorization is not supported. Bad Request");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if (!request.getParameterMap().isEmpty()) {
-            logger.info("Unexpected parameters detected: " + request.getParameterMap());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        long startTime = getCurrentTimeMillis();
+        incrementRequestCount("api.healtz.request.count");
 
-        if (service.getConfig()) {
-            logger.info("Getting success response");
-            return ResponseEntity.ok().build();
+        try {
+
+            if (payload != null && !payload.isEmpty()) {
+                logger.info("Payload is not supported. Bad Request");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            if (request.getContentLength() > 0) {
+                logger.info("Payload is not supported. Bad Request");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            if (request.getHeader("Authorization") != null) {
+                logger.info("Authorization is not supported. Bad Request");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            if (!request.getParameterMap().isEmpty()) {
+                logger.info("Unexpected parameters detected: " + request.getParameterMap());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            if (service.getConfig()) {
+                logger.info("Getting success response");
+                return ResponseEntity.ok().build();
+            }
+            logger.info("Service is unavailable now. Please try again later.");
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        } finally {
+            logExecutionTime("api.healtz.execution.time", startTime);
+
         }
-        logger.info("Service is unavailable now. Please try again later.");
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     }
 
     public void setResponseHeaders(HttpServletResponse response) {
@@ -58,19 +72,25 @@ public class ConfigController {
         logger.info("Finished setting response headers");
     }
 
-    @RequestMapping(path = "/healthz", method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
+    @RequestMapping(path = "/healthz", method = { RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH,
+            RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE })
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public void unSupportedMethods(HttpServletResponse response) {
         logger.error("Unsupported HTTP method");
         setResponseHeaders(response);
     }
 
-    @RequestMapping(path = "/**", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void wrongURL(HttpServletResponse response) {
-        logger.error("wrong URL");
-        setResponseHeaders(response);
+    private void incrementRequestCount(String metricName) {
+        statsd.incrementCounter(metricName);
     }
 
+    private long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    private void logExecutionTime(String metricName, long startTime) {
+        long endTime = System.currentTimeMillis();
+        statsd.recordExecutionTime(metricName, endTime - startTime);
+    }
 
 }
