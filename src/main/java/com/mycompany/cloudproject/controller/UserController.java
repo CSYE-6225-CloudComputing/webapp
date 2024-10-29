@@ -6,7 +6,8 @@ import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.service.ImageService;
 import com.mycompany.cloudproject.service.UserService;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
-
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +33,8 @@ import java.util.Map;
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class.getName());
+    private static final StatsDClient statsd = new NonBlockingStatsDClient("cloudproject", "localhost", 8125);
+
 
     @Autowired
     UserService userService;
@@ -45,6 +48,10 @@ public class UserController {
     @PostMapping("/v1/user")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        long startTime = System.currentTimeMillis();
+        statsd.incrementCounter("createUser.request.count");
+                
         logger.info("POST: Request received");
         setResponseHeaders(response);
         if (bindingResult.hasErrors()) {
@@ -54,6 +61,10 @@ public class UserController {
 
         UserDTO dto = userService.createUser(userDTO, request);
 
+        long endTime = System.currentTimeMillis();
+        statsd.recordExecutionTime("createUser.execution.time", endTime - startTime);
+
+
         logger.info("POST: Request completed");
         return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
 
@@ -62,18 +73,27 @@ public class UserController {
     @GetMapping("/v1/user/self")
     public ResponseEntity<UserDTO> getUserDetails(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+
+        long startTime = System.currentTimeMillis();
+        statsd.incrementCounter("api.getUserDetails.count");        
         logger.info("GET: Request received");
         setResponseHeaders(response);
         if (!RequestCheckUtility.checkRequestBody(request)) {
             UserDTO userDTO = userService.getUserDetails(request);
 
             logger.info("GET: Response received");
-
+            long endTime = System.currentTimeMillis();
+            statsd.recordExecutionTime("getUserDetails.execution.time", endTime - startTime);
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } else {
+            long endTime = System.currentTimeMillis();
+            statsd.recordExecutionTime("getUserDetails.execution.time", endTime - startTime);
             logger.error("GET : request failed due to bad request");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+       
+ 
     }
 
     @PutMapping("/v1/user/self")
