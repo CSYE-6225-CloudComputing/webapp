@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,6 +84,15 @@ public class ImageService {
             System.out.println("inappropriate");
 
         }
+
+        if(existinguser != null){
+            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId()); 
+            if (optionalImage.isPresent()) {
+                logger.error("Image is already Present");
+                throw new UserCustomExceptions("Image is already Present");
+            }
+        }
+              
 
         return uploadImage(file, existinguser);
     }

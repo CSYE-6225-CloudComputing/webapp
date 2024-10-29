@@ -5,6 +5,7 @@ import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.service.ImageService;
 import com.mycompany.cloudproject.service.UserService;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -125,7 +126,7 @@ public class UserController {
     }
 
     @PostMapping("/v1/user/self/pic")
-    public ResponseEntity<ImageResponseDTO> uploadProfilePic(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<ImageResponseDTO> uploadProfilePic(@RequestParam("profilePic") MultipartFile file,
             HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -134,8 +135,13 @@ public class UserController {
             logger.info("POST USER PROFILE UPLOAD REQUEST: Profile picture upload request received");
             setResponseHeaders(response);
 
-            if (file.isEmpty()) {
+            if (!request.getContentType().startsWith("multipart/")) {
+                logger.error("POST USER PROFILE UPLOAD REQUEST:: Current request is not a multipart request");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+    
 
+            if (file == null || file.isEmpty()) {
                 logger.error("POST USER PROFILE UPLOAD REQUEST:: No file uploaded");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
