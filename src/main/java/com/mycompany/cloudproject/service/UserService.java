@@ -1,6 +1,5 @@
 package com.mycompany.cloudproject.service;
 
-import com.mycompany.cloudproject.controller.UserController;
 import com.mycompany.cloudproject.dao.UserDAO;
 import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
@@ -11,7 +10,6 @@ import com.mycompany.cloudproject.utilities.RequestCheckUtility;
 import com.mycompany.cloudproject.utilities.TokenUtility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
