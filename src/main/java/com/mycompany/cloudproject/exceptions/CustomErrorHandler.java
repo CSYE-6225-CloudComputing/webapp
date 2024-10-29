@@ -45,5 +45,11 @@ public class CustomErrorHandler {
                 .build();
     }
 
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Void> handleGeneralException(Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 
 }
