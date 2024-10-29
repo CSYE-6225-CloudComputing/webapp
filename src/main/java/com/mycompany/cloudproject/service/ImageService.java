@@ -84,6 +84,14 @@ public class ImageService {
 
         }
 
+        if(existinguser != null){
+            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId()); 
+            if (optionalImage.isPresent()) {
+                logger.error("Image is already Present");
+                throw new UserCustomExceptions("Image is already Present");
+            }
+        }
+
         return uploadImage(file, existinguser);
     }
 
@@ -224,7 +232,7 @@ public class ImageService {
 
         // Step 2: Get all images associated with the user
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages.isEmpty()) {
+        if (userImages==null && userImages.isEmpty()) {
             logger.info("No images found for user: " + existingUser.getId());
             throw new UserCustomExceptions("No images found for this user.");
         }
