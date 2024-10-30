@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -140,6 +141,18 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            if (multipartRequest.getMultiFileMap().size() != 1
+                    || !multipartRequest.getFileMap().containsKey("profilePic")) {
+                logger.error("POST USER PROFILE UPLOAD REQUEST:: Invalid form data. Only 'profilePic' is allowed");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            if (!request.getParameterMap().isEmpty()) {
+                logger.error("POST USER PROFILE UPLOAD REQUEST:: Query parameters are not allowed");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
             // Check if the file is empty
             if (file == null || file.isEmpty()) {
                 logger.error("POST USER PROFILE UPLOAD REQUEST:: No file uploaded");
@@ -186,17 +199,17 @@ public class UserController {
     @DeleteMapping("/v1/user/self/pic")
     public ResponseEntity<Void> deleteAllImages(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+
         long startTime = System.currentTimeMillis();
+        setResponseHeaders(response);
         incrementRequestCount("api.deleteUserProfile.count");
         try {
             logger.info("DELETE: Request received to delete all images");
-            setResponseHeaders(response);
 
             if (!RequestCheckUtility.checkValidBasicAuthHeader(request)) {
                 logger.error("DELETE: Error occurred while deleting images - UNAUTORIZED");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
             try {
                 imageService.deleteAllImagesForUser(request);
                 logger.info("DELETE: All images deleted successfully");
@@ -204,7 +217,7 @@ public class UserController {
             } catch (Exception e) {
 
                 logger.error("DELETE: Error occurred while deleting images - " + e.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } finally {
             logExecutionTime("api.deleteUserProfile.execution.time", startTime);

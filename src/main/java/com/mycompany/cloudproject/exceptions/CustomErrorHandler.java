@@ -38,6 +38,13 @@ public class CustomErrorHandler {
     }
 
 
+    
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Void> handleParametersofrnotfoun(Exception ex) {
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<Void> handleUnAuthorizedException(UnAuthorizedException ex) {
         return ResponseEntity

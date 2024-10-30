@@ -25,6 +25,7 @@ import com.mycompany.cloudproject.dto.ImageResponseDTO;
 
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.exceptions.UserCustomExceptions;
+import com.mycompany.cloudproject.exceptions.NotFoundException;
 import com.mycompany.cloudproject.model.Image;
 import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.utilities.EncryptionUtility;
@@ -57,6 +58,13 @@ public class ImageService {
     public ImageResponseDTO uploadProfilePic(MultipartFile file, HttpServletRequest request)
             throws Exception {
         logger.info("checkig update user request FOR USER PROFILE");
+        
+        if (request.getContentLength() > 0)
+        throw new UserCustomExceptions("Bad request");
+
+        if (request.getHeader("Authorization") == null)
+            throw new UnAuthorizedException("Unauthorized");
+
         if (!RequestCheckUtility.checkForParameterMap(request)
                 || !RequestCheckUtility.checkValidBasicAuthHeader(request)) {
             throw new UserCustomExceptions("Bad request");
@@ -84,8 +92,8 @@ public class ImageService {
 
         }
 
-        if(existinguser != null){
-            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId()); 
+        if (existinguser != null) {
+            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId());
             if (optionalImage.isPresent()) {
                 logger.error("Image is already Present");
                 throw new UserCustomExceptions("Image is already Present");
@@ -154,7 +162,7 @@ public class ImageService {
     }
 
     public ImageResponseDTO getProfileDetails(HttpServletRequest request)
-            throws UnAuthorizedException, UserCustomExceptions {
+            throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
 
         ImageResponseDTO imageResponseDTO = null;
         if (request.getContentLength() > 0)
@@ -194,7 +202,7 @@ public class ImageService {
             logExecutionTime("db.getUserProfile.execution.time", startTime);
 
             if (!optionalImage.isPresent()) {
-                throw new UserCustomExceptions("No image found for this user");
+                throw new NotFoundException("No image found for this user");
             }
 
             Image image = optionalImage.get();
@@ -211,10 +219,18 @@ public class ImageService {
         return imageResponseDTO;
     }
 
-    public void deleteAllImagesForUser(HttpServletRequest request) throws Exception {
+    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
         logger.info("Checking delete user images request");
 
-        
+        if (request.getContentLength() > 0)
+            throw new UserCustomExceptions("Bad request");
+
+        if (!request.getParameterMap().isEmpty())
+            throw new UserCustomExceptions("Bad request");
+
+        if (request.getHeader("Authorization") == null)
+            throw new UnAuthorizedException("Unauthorized");
+
         if (!RequestCheckUtility.checkForParameterMap(request)
                 || !RequestCheckUtility.checkValidBasicAuthHeader(request)) {
             throw new UserCustomExceptions("Bad request");
@@ -230,12 +246,11 @@ public class ImageService {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
-        
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages==null) {
-            logger.info("No images found for user: " + existingUser.getId());
-            throw new UserCustomExceptions("No images found for this user.");
-        }else{
+        if (userImages == null) {
+            logger.info("No images found for user");
+            throw new NotFoundException("No images found for this user.");
+        } else {
 
             deleteImagesFromS3(userImages);
 
@@ -247,9 +262,6 @@ public class ImageService {
 
         }
 
-        
-
-      
     }
 
     private void deleteImagesFromS3(List<Image> images) throws UserCustomExceptions {
