@@ -5,12 +5,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ImageResponseDTO {
+    @JsonProperty("file_name")
     private String fileName;
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("url")
     private String url;
     @JsonProperty("upload_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate uploadDate;
+    @JsonProperty("user_id")
     private String userId;
 
     // Constructor
@@ -18,8 +22,8 @@ public class ImageResponseDTO {
         this.fileName = fileName;
         this.id = id;
         this.url = url;
-        this.uploadDate = localDate;
         this.userId = userId;
+        this.uploadDate = localDate;
     }
 
     public ImageResponseDTO() {
