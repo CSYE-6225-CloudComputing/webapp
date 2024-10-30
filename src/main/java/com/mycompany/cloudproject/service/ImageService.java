@@ -57,6 +57,13 @@ public class ImageService {
     public ImageResponseDTO uploadProfilePic(MultipartFile file, HttpServletRequest request)
             throws Exception {
         logger.info("checkig update user request FOR USER PROFILE");
+        
+        if (request.getContentLength() > 0)
+        throw new UserCustomExceptions("Bad request");
+
+        if (request.getHeader("Authorization") == null)
+            throw new UnAuthorizedException("Unauthorized");
+
         if (!RequestCheckUtility.checkForParameterMap(request)
                 || !RequestCheckUtility.checkValidBasicAuthHeader(request)) {
             throw new UserCustomExceptions("Bad request");
@@ -84,8 +91,8 @@ public class ImageService {
 
         }
 
-        if(existinguser != null){
-            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId()); 
+        if (existinguser != null) {
+            Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId());
             if (optionalImage.isPresent()) {
                 logger.error("Image is already Present");
                 throw new UserCustomExceptions("Image is already Present");
@@ -211,10 +218,18 @@ public class ImageService {
         return imageResponseDTO;
     }
 
-    public void deleteAllImagesForUser(HttpServletRequest request) throws Exception {
+    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions {
         logger.info("Checking delete user images request");
 
-        
+        if (request.getContentLength() > 0)
+            throw new UserCustomExceptions("Bad request");
+
+        if (!request.getParameterMap().isEmpty())
+            throw new UserCustomExceptions("Bad request");
+
+        if (request.getHeader("Authorization") == null)
+            throw new UnAuthorizedException("Unauthorized");
+
         if (!RequestCheckUtility.checkForParameterMap(request)
                 || !RequestCheckUtility.checkValidBasicAuthHeader(request)) {
             throw new UserCustomExceptions("Bad request");
@@ -230,12 +245,11 @@ public class ImageService {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
-        
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages==null) {
-            logger.info("No images found for user: " + existingUser.getId());
+        if (userImages == null) {
+            logger.info("No images found for user");
             throw new UserCustomExceptions("No images found for this user.");
-        }else{
+        } else {
 
             deleteImagesFromS3(userImages);
 
@@ -247,9 +261,6 @@ public class ImageService {
 
         }
 
-        
-
-      
     }
 
     private void deleteImagesFromS3(List<Image> images) throws UserCustomExceptions {
