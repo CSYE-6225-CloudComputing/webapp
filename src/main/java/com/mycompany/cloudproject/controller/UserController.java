@@ -2,6 +2,7 @@ package com.mycompany.cloudproject.controller;
 
 import com.mycompany.cloudproject.dto.ImageResponseDTO;
 import com.mycompany.cloudproject.dto.UserDTO;
+import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.service.ImageService;
 import com.mycompany.cloudproject.service.UserService;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
@@ -135,12 +136,9 @@ public class UserController {
             logger.info("POST USER PROFILE UPLOAD REQUEST: Profile picture upload request received");
             setResponseHeaders(response);
 
-            // Check if the request is a multipart request
-            if (!request.getContentType().startsWith("multipart/")) {
-                logger.error("POST USER PROFILE UPLOAD REQUEST:: Current request is not a multipart request");
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
+             if (request.getHeader("Authorization") == null)
+            throw new UnAuthorizedException("Unauthorized");
+            
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             if (multipartRequest.getMultiFileMap().size() != 1
                     || !multipartRequest.getFileMap().containsKey("profilePic")) {
@@ -210,15 +208,11 @@ public class UserController {
                 logger.error("DELETE: Error occurred while deleting images - UNAUTORIZED");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-            try {
+        
                 imageService.deleteAllImagesForUser(request);
                 logger.info("DELETE: All images deleted successfully");
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            } catch (Exception e) {
-
-                logger.error("DELETE: Error occurred while deleting images - " + e.getMessage());
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+            
         } finally {
             logExecutionTime("api.deleteUserProfile.execution.time", startTime);
         }
