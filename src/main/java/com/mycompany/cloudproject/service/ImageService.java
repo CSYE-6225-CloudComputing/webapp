@@ -232,20 +232,24 @@ public class ImageService {
 
         
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages==null || userImages.isEmpty()) {
+        if (userImages==null) {
             logger.info("No images found for user: " + existingUser.getId());
             throw new UserCustomExceptions("No images found for this user.");
+        }else{
+
+            deleteImagesFromS3(userImages);
+
+            // Delete images from database
+            long startTime = getCurrentTimeMillis();
+            imageDAO.deleteImagesByUserId(existingUser.getId());
+            logExecutionTime("db.deleteUserProfile.execution.time", startTime);
+            logger.info("Successfully deleted all images for user: " + existingUser.getId());
+
         }
 
         
 
-        deleteImagesFromS3(userImages);
-
-        // Delete images from database
-        long startTime = getCurrentTimeMillis();
-        imageDAO.deleteImagesByUserId(existingUser.getId());
-        logExecutionTime("db.deleteUserProfile.execution.time", startTime);
-        logger.info("Successfully deleted all images for user: " + existingUser.getId());
+      
     }
 
     private void deleteImagesFromS3(List<Image> images) throws UserCustomExceptions {
