@@ -25,6 +25,7 @@ import com.mycompany.cloudproject.dto.ImageResponseDTO;
 
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.exceptions.UserCustomExceptions;
+import com.mycompany.cloudproject.exceptions.NotFoundException;
 import com.mycompany.cloudproject.model.Image;
 import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.utilities.EncryptionUtility;
@@ -161,7 +162,7 @@ public class ImageService {
     }
 
     public ImageResponseDTO getProfileDetails(HttpServletRequest request)
-            throws UnAuthorizedException, UserCustomExceptions {
+            throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
 
         ImageResponseDTO imageResponseDTO = null;
         if (request.getContentLength() > 0)
@@ -201,7 +202,7 @@ public class ImageService {
             logExecutionTime("db.getUserProfile.execution.time", startTime);
 
             if (!optionalImage.isPresent()) {
-                throw new UserCustomExceptions("No image found for this user");
+                throw new NotFoundException("No image found for this user");
             }
 
             Image image = optionalImage.get();
@@ -218,7 +219,7 @@ public class ImageService {
         return imageResponseDTO;
     }
 
-    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions {
+    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
         logger.info("Checking delete user images request");
 
         if (request.getContentLength() > 0)
@@ -248,7 +249,7 @@ public class ImageService {
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
         if (userImages == null) {
             logger.info("No images found for user");
-            throw new UserCustomExceptions("No images found for this user.");
+            throw new NotFoundException("No images found for this user.");
         } else {
 
             deleteImagesFromS3(userImages);
