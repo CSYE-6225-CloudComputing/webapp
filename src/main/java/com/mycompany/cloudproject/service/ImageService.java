@@ -214,7 +214,7 @@ public class ImageService {
     public void deleteAllImagesForUser(HttpServletRequest request) throws Exception {
         logger.info("Checking delete user images request");
 
-        // Step 1: Verify request and authenticate user
+        
         if (!RequestCheckUtility.checkForParameterMap(request)
                 || !RequestCheckUtility.checkValidBasicAuthHeader(request)) {
             throw new UserCustomExceptions("Bad request");
@@ -230,25 +230,25 @@ public class ImageService {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
-        // Step 2: Get all images associated with the user
+        
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
         if (userImages==null && userImages.isEmpty()) {
             logger.info("No images found for user: " + existingUser.getId());
             throw new UserCustomExceptions("No images found for this user.");
         }
 
-        // Step 3: Delete images from S3
+        
 
         deleteImagesFromS3(userImages);
 
-        // Step 4: Delete images from database
+        // Delete images from database
         long startTime = getCurrentTimeMillis();
         imageDAO.deleteImagesByUserId(existingUser.getId());
         logExecutionTime("db.deleteUserProfile.execution.time", startTime);
         logger.info("Successfully deleted all images for user: " + existingUser.getId());
     }
 
-    private void deleteImagesFromS3(List<Image> images) {
+    private void deleteImagesFromS3(List<Image> images) throws UserCustomExceptions {
         List<DeleteObjectsRequest.KeyVersion> objectsToDelete = new ArrayList<>();
 
         for (Image image : images) {
@@ -272,6 +272,7 @@ public class ImageService {
             }
         } else {
             logger.warn("No images to delete from S3.");
+            throw new UserCustomExceptions("No images found for this user.");
         }
     }
 
