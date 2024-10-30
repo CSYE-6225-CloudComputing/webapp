@@ -232,7 +232,7 @@ public class ImageService {
 
         
         List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages==null && userImages.isEmpty()) {
+        if (userImages==null || userImages.isEmpty()) {
             logger.info("No images found for user: " + existingUser.getId());
             throw new UserCustomExceptions("No images found for this user.");
         }

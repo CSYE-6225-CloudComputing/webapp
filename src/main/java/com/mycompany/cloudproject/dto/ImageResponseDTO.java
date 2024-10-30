@@ -11,7 +11,7 @@ public class ImageResponseDTO {
     @JsonProperty("upload_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate uploadDate;
-    private String userId;
+    
 
     // Constructor
     public ImageResponseDTO(String fileName, String id, String url, LocalDate localDate, String userId) {
