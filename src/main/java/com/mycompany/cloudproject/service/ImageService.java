@@ -59,8 +59,6 @@ public class ImageService {
             throws Exception {
         logger.info("checkig update user request FOR USER PROFILE");
         
-        if (request.getContentLength() > 0)
-        throw new UserCustomExceptions("Bad request");
 
         if (request.getHeader("Authorization") == null)
             throw new UnAuthorizedException("Unauthorized");
@@ -246,8 +244,9 @@ public class ImageService {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
-        List<Image> userImages = imageDAO.getImagesByUserId(existingUser.getId());
-        if (userImages == null) {
+        List<Image> userImages = null;
+        userImages = imageDAO.getImagesByUserId(existingUser.getId());
+        if (userImages==null ||  userImages.isEmpty()) {
             logger.info("No images found for user");
             throw new NotFoundException("No images found for this user.");
         } else {
