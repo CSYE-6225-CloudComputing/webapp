@@ -8,6 +8,8 @@ import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.utilities.EncryptionUtility;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
 import com.mycompany.cloudproject.utilities.TokenUtility;
+import com.timgroup.statsd.StatsDClient;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -29,6 +31,9 @@ public class UserService {
     @Autowired
     UserDAO userDAO;
 
+     @Autowired
+    private StatsDClient statsd;
+
     @Transactional
     public UserDTO createUser(UserDTO userDTO, HttpServletRequest request) throws Exception {
 
@@ -49,7 +54,10 @@ public class UserService {
             userDTO.setId(user.getId());
             userDTO.setPassword(EncryptionUtility.getEncryptedPassword(userDTO.getPassword()));
             BeanUtils.copyProperties(userDTO, user);
+            long startTime = getCurrentTimeMillis();
             userDAO.createUser(user);
+            logExecutionTime("db.createUser.execution.time", startTime);
+
             BeanUtils.copyProperties(user, userDTO);
 
         }
@@ -81,7 +89,9 @@ public class UserService {
         String email = map.get("email");
         String password = map.get("password");
         //System.out.println("***password" + password);
+        long startTime = getCurrentTimeMillis();
         User existinguser = userDAO.checkExistingUser(email);
+        logExecutionTime("db.getUser.execution.time", startTime);
         if (existinguser == null || !EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
@@ -126,9 +136,21 @@ public class UserService {
             // existinguser.setEmail(email);
             existinguser.setFirstName(userDTO.getFirstName());
             existinguser.setLastName(userDTO.getLastName());
+            long startTime = getCurrentTimeMillis();
             userDAO.updateUser(existinguser);
+            logExecutionTime("db.udpateUser.execution.time", startTime);
         }
 
 
+    }
+
+
+    private long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    private void logExecutionTime(String metricName, long startTime) {
+        long endTime = System.currentTimeMillis();
+        statsd.recordExecutionTime(metricName, endTime - startTime);
     }
 }
