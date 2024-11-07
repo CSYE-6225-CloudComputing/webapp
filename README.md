@@ -55,7 +55,7 @@ To build and deploy the web application locally, follow these steps:
 
 ### User API Endpoints
 
-#### 1. Create User
+#### 1. Create User Profile
 - **Endpoint:** `/v1/user`
 - **Method:** `POST`
 
