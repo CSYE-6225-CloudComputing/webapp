@@ -1,10 +1,8 @@
 package com.mycompany.cloudproject.model;
 
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
-
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_token")
@@ -14,7 +12,6 @@ public class UserToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, unique = true)
     private String token;
 
@@ -31,6 +28,7 @@ public class UserToken {
     // Constructor
     public UserToken() {
         this.createdAt = LocalDateTime.now();
+        this.token = UUID.randomUUID().toString(); // Generate a unique UUID token
     }
 
     // Getters and Setters
@@ -42,8 +40,6 @@ public class UserToken {
         this.id = id;
     }
 
-
-   
     public String getToken() {
         return token;
     }
