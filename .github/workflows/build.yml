@@ -41,6 +41,8 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: "${{ env.DB_PASSWORD }}"
           AWS_S3_BUCKET_NAME: "mock-bucket"
           AWS_S3_REGION: "us-east-1"
+          AWS_SNS_ARN: "test"
+          DOMAIN_NAME: "dev.manalicloud.me"
         
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3

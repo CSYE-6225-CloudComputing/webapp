@@ -32,6 +32,9 @@ public class User {
     @Column(name = "account_updated")
     private LocalDateTime accountUpdated;
 
+    @Column(name="user_active")
+    private boolean active;
+
 
     public User() {
         this.id = UUID.randomUUID().toString();
@@ -91,4 +94,16 @@ public class User {
     public void setAccountUpdated(LocalDateTime accountUpdated) {
         this.accountUpdated = accountUpdated;
     }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+
+    public boolean isActive() {
+        return active;
+    }
+    
+
+
 }

@@ -1,6 +1,8 @@
 package com.mycompany.cloudproject.dao;
 
 import com.mycompany.cloudproject.model.User;
+import com.mycompany.cloudproject.model.UserToken;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -32,5 +34,9 @@ public class UserDAO{
 
     public void updateUser(User user) {
         entityManager.merge(user);
+    }
+
+    public void createToken(UserToken token){
+        entityManager.merge(token);
     }
 }

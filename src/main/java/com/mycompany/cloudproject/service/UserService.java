@@ -1,10 +1,12 @@
 package com.mycompany.cloudproject.service;
 
 import com.mycompany.cloudproject.dao.UserDAO;
+import com.mycompany.cloudproject.dao.UserTokenDAO;
 import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.exceptions.UserCustomExceptions;
 import com.mycompany.cloudproject.model.User;
+import com.mycompany.cloudproject.model.UserToken;
 import com.mycompany.cloudproject.utilities.EncryptionUtility;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
 import com.mycompany.cloudproject.utilities.TokenUtility;
@@ -12,10 +14,13 @@ import com.timgroup.statsd.StatsDClient;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -33,6 +38,15 @@ public class UserService {
 
      @Autowired
     private StatsDClient statsd;
+
+    @Autowired
+    private SNSService snsService; 
+
+    @Autowired
+    private UserTokenDAO userTokenDAO; 
+
+     @Value("${domain.name}")
+    private String domainName;
 
     @Transactional
     public UserDTO createUser(UserDTO userDTO, HttpServletRequest request) throws Exception {
@@ -152,5 +166,48 @@ public class UserService {
     private void logExecutionTime(String metricName, long startTime) {
         long endTime = System.currentTimeMillis();
         statsd.recordExecutionTime(metricName, endTime - startTime);
+    }
+
+    public void sendMail(UserDTO userDTO) {
+
+        User user = userDAO.checkExistingUser(userDTO.getEmail());
+
+        UserToken token = new UserToken();
+
+        token.setUser(user);
+
+        userDAO.createToken(token);
+
+        String activationLink = "https://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
+      
+        snsService.publishMessage(user.getEmail(), token.getToken(), activationLink);
+
+    }
+
+    public boolean checkVerfication(String email, String token) {
+
+        User user = userDAO.checkExistingUser(email);
+
+        if(user != null){
+
+        //check for token
+        UserToken userToken = userTokenDAO.findUserToken(user,token);
+
+         // Check if the token is still valid (expiry time is greater than the current time)
+         if (userToken.getExpiresAt().isAfter(java.time.LocalDateTime.now())) {
+            // Token is valid, mark it as verified
+            user.setActive(true);
+            userDAO.updateUser(user);
+            return true;
+        } else {
+            // Token is expired
+            return false;
+        }
+
+        }else{
+            return false;
+        }
+      
+    
     }
 }

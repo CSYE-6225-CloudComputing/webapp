@@ -4,6 +4,7 @@ import com.mycompany.cloudproject.dto.ImageResponseDTO;
 import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.service.ImageService;
+import com.mycompany.cloudproject.service.SNSService;
 import com.mycompany.cloudproject.service.UserService;
 import com.mycompany.cloudproject.utilities.RequestCheckUtility;
 import com.timgroup.statsd.StatsDClient;
@@ -40,6 +41,8 @@ public class UserController {
     @Autowired
     private StatsDClient statsd;
 
+    
+
     @PostMapping("/v1/user")
     public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult,
             HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -57,6 +60,10 @@ public class UserController {
             }
 
             UserDTO dto = userService.createUser(userDTO, request);
+
+            userService.sendMail(userDTO);
+
+          
 
             logger.info("POST: Request completed for user");
             return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
@@ -226,6 +233,7 @@ public class UserController {
         setResponseHeaders(response);
     }
 
+   
     @RequestMapping(path = "/v1/user/self/pic", method = { RequestMethod.HEAD, RequestMethod.PATCH,
             RequestMethod.OPTIONS,
             RequestMethod.PUT })
