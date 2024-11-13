@@ -26,14 +26,6 @@ public class TokenUtility {
         return map;
     }
 
-    public static UserToken generateBasicAuthToken(User user) {
-        String credentials = user.getEmail() + ":" + user.getPassword();
-        UserToken token = new UserToken();
-        token.setToken(Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8)));
-        token.setUsername(user.getEmail());
-        token.setExpiresAt(LocalDateTime.now().plusHours(24));
-        token.setCreatedAt(LocalDateTime.now());
-        return token;
-    }
+    
 
 }
