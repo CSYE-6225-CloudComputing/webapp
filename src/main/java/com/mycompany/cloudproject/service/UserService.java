@@ -186,7 +186,11 @@ public class UserService {
 
     public boolean checkVerfication(String email, String token) {
 
+        logger.info("Checking verification");
+
         User user = userDAO.checkExistingUser(email);
+
+       
 
         if(user != null){
 
@@ -196,15 +200,18 @@ public class UserService {
          // Check if the token is still valid (expiry time is greater than the current time)
          if (userToken.getExpiresAt().isAfter(java.time.LocalDateTime.now())) {
             // Token is valid, mark it as verified
+            logger.info("validating token");
             user.setActive(true);
             userDAO.updateUser(user);
             return true;
         } else {
             // Token is expired
+            logger.error("token is expired");
             return false;
         }
 
         }else{
+            logger.error("token error");
             return false;
         }
       
