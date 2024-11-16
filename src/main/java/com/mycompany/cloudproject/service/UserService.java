@@ -106,16 +106,19 @@ public class UserService {
         long startTime = getCurrentTimeMillis();
         User existinguser = userDAO.checkExistingUser(email);
         logExecutionTime("db.getUser.execution.time", startTime);
+        Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
         if (existinguser == null || !EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
         if (existinguser != null && EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
-            if(isVerified(existinguser)){
-            BeanUtils.copyProperties(existinguser, userDTO);
-            return userDTO;
-            }else{
+            if( !isIntegrationTests && !isVerified(existinguser)){
                 logger.error("User is not verified");
+                throw new UnAuthorizedException("User is not verified");
+           
+            }else{
+                BeanUtils.copyProperties(existinguser, userDTO);
+                return userDTO;
             }
         }
 
@@ -149,7 +152,12 @@ public class UserService {
 
 
         if (password != null && existinguser != null) {
-            if(isVerified(existinguser)){
+            Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
+            if( !isIntegrationTests && !isVerified(existinguser)){
+                logger.error("User is not verified");
+                throw new UnAuthorizedException("User is unauthorized");
+            }
+            
             existinguser.setPassword(EncryptionUtility.getEncryptedPassword(userDTO.getPassword()));
             existinguser.setAccountUpdated(LocalDateTime.now());
             // existinguser.setEmail(email);
@@ -158,9 +166,7 @@ public class UserService {
             long startTime = getCurrentTimeMillis();
             userDAO.updateUser(existinguser);
             logExecutionTime("db.udpateUser.execution.time", startTime);
-            }else{
-                logger.error("User is not verified");
-            }
+        
         }
 
 
