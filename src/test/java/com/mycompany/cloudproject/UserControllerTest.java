@@ -39,12 +39,15 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Create a User object
-        userDTO = new UserDTO();
-        userDTO.setFirstName("manali");
-        userDTO.setLastName("rama");     
-        userDTO.setPassword("12378795");
-        userDTO.setEmail("maal@example.com");
+     
+
+        String userJson = "{"
+        + "\"first_name\": \"manali\","
+        + "\"last_name\": \"rama\","
+        + "\"password\": \"12378795\","
+        + "\"email\": \"maal@example.com\""
+        + "}";
+
 
         // Mock the HttpServletRequest
         httpServletRequest = Mockito.mock(HttpServletRequest.class);
@@ -55,7 +58,7 @@ public class UserControllerTest {
             mockMvc.perform(post("/v1/user")
                     .header("IsIntegrationTest", "true") // Set IsIntegrationTest header
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsString(userDTO)))
+                    .content(userJson))
                     .andExpect(status().isCreated()); // Assuming the user is created successfully (201 Created)
         } catch (Exception e) {
             throw new RuntimeException("Error during user creation", e);
