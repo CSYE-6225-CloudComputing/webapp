@@ -112,14 +112,15 @@ jobs:
                        -var "subnet_id=${VPC_SUBNET_ID}" \
                        -var "vpc_id=${VPC_ID}" \
                        -var "instance_type=${INSTANCE_TYPE}" \
-                      -var "aws_devuser=${AWS_DEVUSER}" ./packer/ami.pkr.hcl
+                      -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
           
           # Capture the AMI ID from the machine-readable output
-          AMI_ID=$(packer build -machine-readable ./packer/ami.pkr.hcl | awk -F, '$0 ~/artifact,0,id/ {print $6}')
+          AMI_ID=$(packer build -machine-readable ami.pkr.hcl | awk -F, '$0 ~/artifact,0,id/ {print $6}')
           
           # Output the AMI ID for later steps and save to GitHub environment variable
           echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
           echo "::set-output name=ami_id::$AMI_ID"
+        working-directory: ./packer
 
   update-launch-template-and-refresh-asg:
     if: github.event.pull_request.merged == true
