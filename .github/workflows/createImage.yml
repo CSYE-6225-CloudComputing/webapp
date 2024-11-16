@@ -108,14 +108,18 @@ jobs:
                        -var "source_ami=${SOURCE_AMI}" \
                        -var "ssh_username=${SSH_USERNAME}" \
                        -var "profile=${PROFILE}" \
-                       -var "database=${DB_DATABASE}" \
-                       -var "user=${DB_USER}" \
-                       -var "password=${DB_PASSWORD}" \
                        -var "aws_demouser=${AWS_DEMOUSER}" \
                        -var "subnet_id=${VPC_SUBNET_ID}" \
                        -var "vpc_id=${VPC_ID}" \
                        -var "instance_type=${INSTANCE_TYPE}" \
-                       -var "aws_devuser=${AWS_DEVUSER}" .
+                      -var "aws_devuser=${AWS_DEVUSER}" ./packer/ami.pkr.hcl
+          
+          # Capture the AMI ID from the machine-readable output
+          AMI_ID=$(packer build -machine-readable ./packer/ami.pkr.hcl | awk -F, '$0 ~/artifact,0,id/ {print $6}')
+          
+          # Output the AMI ID for later steps and save to GitHub environment variable
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+          echo "::set-output name=ami_id::$AMI_ID"
         working-directory: ./packer
 
   update-launch-template-and-refresh-asg:
@@ -138,18 +142,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-
-      # 2. Fetch the latest AMI ID from Packer Build
-      - name: Fetch Latest AMI ID
-        run: |
-          # Check if manifest.json exists before processing
-          if [ -f ./packer/manifest.json ]; then
-            ami_id=$(jq -r '.builds[-1].artifact_id' ./packer/manifest.json | cut -d':' -f2)
-            echo "AMI_ID=$ami_id" >> $GITHUB_ENV
-          else
-            echo "manifest.json not found!"
-            exit 1
-          fi
 
       # 3. Update the Launch Template with the new AMI
       - name: Update Launch Template
