@@ -190,11 +190,12 @@ public class UserService {
 
         token.setUser(user);
 
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(2));
         userDAO.createToken(token);
 
         String activationLink = "http://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
       
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(2));
+       
         snsService.publishMessage(user.getEmail(), token.getToken(), activationLink);
 
     }
