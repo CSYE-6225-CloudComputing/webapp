@@ -120,7 +120,6 @@ jobs:
           # Output the AMI ID for later steps and save to GitHub environment variable
           echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
           echo "::set-output name=ami_id::$AMI_ID"
-        working-directory: ./packer
 
   update-launch-template-and-refresh-asg:
     if: github.event.pull_request.merged == true
