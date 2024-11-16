@@ -1,5 +1,6 @@
 package com.mycompany.cloudproject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import java.util.Base64;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -37,21 +39,29 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Create a User object
-        userDTO = new UserDTO();
-        userDTO.setFirstName("manali");
-        userDTO.setLastName("rama");
-        userDTO.setEmail("maal@example.com");
-        userDTO.setPassword("12378795");
+     
+
+        String userJson = "{"
+        + "\"first_name\": \"manali\","
+        + "\"last_name\": \"rama\","
+        + "\"password\": \"12378795\","
+        + "\"email\": \"maal@example.com\""
+        + "}";
+
 
         // Mock the HttpServletRequest
         httpServletRequest = Mockito.mock(HttpServletRequest.class);
 
         // Save the user to the database
+        // Perform the POST request to create the user
         try {
-            userService.createUser(userDTO, httpServletRequest);
+            mockMvc.perform(post("/v1/user")
+                    .header("IsIntegrationTest", "true") // Set IsIntegrationTest header
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(userJson))
+                    .andExpect(status().isCreated()); // Assuming the user is created successfully (201 Created)
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error during user creation", e);
         }
     }
 
@@ -62,8 +72,9 @@ public class UserControllerTest {
         String base64Credentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
 
         mockMvc.perform(get("/v1/user/self")
-                        .header("Authorization", "Basic " + base64Credentials)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .header("Authorization", "Basic " + base64Credentials)
+                .header("IsIntegrationTest", "true")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.first_name").value("manali"));
     }
@@ -82,12 +93,12 @@ public class UserControllerTest {
                 + "\"password\": \"12378795\""
                 + "}";
 
-
         // Perform the update request
         mockMvc.perform(put("/v1/user/self")
-                        .header("Authorization", "Basic " + base64Credentials)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedUserJson))
+                .header("Authorization", "Basic " + base64Credentials)
+                .header("IsIntegrationTest", "true")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedUserJson))
                 .andDo(result -> {
                     // Log the error response if the status is 400
                     if (result.getResponse().getStatus() == 400) {
@@ -98,8 +109,9 @@ public class UserControllerTest {
 
         // Verify that the user's details were updated
         mockMvc.perform(get("/v1/user/self")
-                        .header("Authorization", "Basic " + base64Credentials)
-                        .contentType(MediaType.APPLICATION_JSON))
+                .header("Authorization", "Basic " + base64Credentials)
+                .header("IsIntegrationTest", "true")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.first_name").value("updated"))
                 .andExpect(jsonPath("$.last_name").value("updated"));

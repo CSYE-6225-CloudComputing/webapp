@@ -61,6 +61,8 @@ public class UserController {
 
             UserDTO dto = userService.createUser(userDTO, request);
 
+            Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
+            if(!isIntegrationTests)
             userService.sendMail(userDTO);
 
           

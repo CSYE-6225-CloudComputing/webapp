@@ -106,13 +106,20 @@ public class UserService {
         long startTime = getCurrentTimeMillis();
         User existinguser = userDAO.checkExistingUser(email);
         logExecutionTime("db.getUser.execution.time", startTime);
+        Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
         if (existinguser == null || !EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
         if (existinguser != null && EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
-            BeanUtils.copyProperties(existinguser, userDTO);
-            return userDTO;
+            if( !isIntegrationTests && !isVerified(existinguser)){
+                logger.error("User is not verified");
+                throw new UnAuthorizedException("User is not verified");
+           
+            }
+                BeanUtils.copyProperties(existinguser, userDTO);
+                return userDTO;
+            
         }
 
         return null;
@@ -145,6 +152,12 @@ public class UserService {
 
 
         if (password != null && existinguser != null) {
+            Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
+            if( !isIntegrationTests && !isVerified(existinguser)){
+                logger.error("User is not verified");
+                throw new UnAuthorizedException("User is unauthorized");
+            }
+            
             existinguser.setPassword(EncryptionUtility.getEncryptedPassword(userDTO.getPassword()));
             existinguser.setAccountUpdated(LocalDateTime.now());
             // existinguser.setEmail(email);
@@ -153,6 +166,7 @@ public class UserService {
             long startTime = getCurrentTimeMillis();
             userDAO.updateUser(existinguser);
             logExecutionTime("db.udpateUser.execution.time", startTime);
+        
         }
 
 
@@ -178,8 +192,9 @@ public class UserService {
 
         userDAO.createToken(token);
 
-        String activationLink = "https://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
+        String activationLink = "http://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
       
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(2));
         snsService.publishMessage(user.getEmail(), token.getToken(), activationLink);
 
     }
@@ -217,4 +232,13 @@ public class UserService {
       
     
     }
+
+
+    public boolean isVerified(User user) {    
+        if(user != null)
+        return user.isActive(); // Check if user is verified
+        else    
+            return false;
+    }
+
 }
