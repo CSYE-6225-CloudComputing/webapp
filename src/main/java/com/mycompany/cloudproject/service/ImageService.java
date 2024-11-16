@@ -81,6 +81,12 @@ public class ImageService {
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
+        if(!existinguser.isActive()){
+            logger.error("User is not verified");
+            throw new UnAuthorizedException("Error occurred while validating credentials");
+        }
+       
+
         System.out.println("File Content Type: " + file.getContentType());
         String contentType = file
                 .getContentType();

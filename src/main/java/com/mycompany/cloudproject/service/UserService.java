@@ -111,8 +111,12 @@ public class UserService {
         }
 
         if (existinguser != null && EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
+            if(isVerified(existinguser)){
             BeanUtils.copyProperties(existinguser, userDTO);
             return userDTO;
+            }else{
+                logger.error("User is not verified");
+            }
         }
 
         return null;
@@ -145,6 +149,7 @@ public class UserService {
 
 
         if (password != null && existinguser != null) {
+            if(isVerified(existinguser)){
             existinguser.setPassword(EncryptionUtility.getEncryptedPassword(userDTO.getPassword()));
             existinguser.setAccountUpdated(LocalDateTime.now());
             // existinguser.setEmail(email);
@@ -153,6 +158,9 @@ public class UserService {
             long startTime = getCurrentTimeMillis();
             userDAO.updateUser(existinguser);
             logExecutionTime("db.udpateUser.execution.time", startTime);
+            }else{
+                logger.error("User is not verified");
+            }
         }
 
 
@@ -178,8 +186,9 @@ public class UserService {
 
         userDAO.createToken(token);
 
-        String activationLink = "https://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
+        String activationLink = "http://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
       
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(2));
         snsService.publishMessage(user.getEmail(), token.getToken(), activationLink);
 
     }
@@ -217,4 +226,13 @@ public class UserService {
       
     
     }
+
+
+    public boolean isVerified(User user) {    
+        if(user != null)
+        return user.isActive(); // Check if user is verified
+        else    
+            return false;
+    }
+
 }
