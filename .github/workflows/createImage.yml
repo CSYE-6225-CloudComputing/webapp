@@ -114,12 +114,22 @@ jobs:
                        -var "instance_type=${INSTANCE_TYPE}" \
                       -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
           
-          # Capture the AMI ID from the machine-readable output
-          AMI_ID=$(packer build -machine-readable ami.pkr.hcl | awk -F, '$0 ~/artifact,0,id/ {print $6}')
-          
-          # Output the AMI ID for later steps and save to GitHub environment variable
-          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
-          echo "::set-output name=ami_id::$AMI_ID"
+           # Install jq to parse the manifest.json file
+              sudo apt-get update
+              sudo apt-get install -y jq
+
+              # Output the contents of the manifest.json for debugging
+              echo "Printing the contents of manifest.json for debugging:"
+              cat manifest.json
+              
+              # Extract the AMI ID from the manifest.json using jq
+              ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+
+              # Output the AMI ID and save it as a GitHub environment variable
+              echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+              
+              echo $(ami_id)
+
         working-directory: ./packer
 
   update-launch-template-and-refresh-asg:
