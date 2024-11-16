@@ -110,6 +110,7 @@ public class UserControllerTest {
         // Verify that the user's details were updated
         mockMvc.perform(get("/v1/user/self")
                 .header("Authorization", "Basic " + base64Credentials)
+                .header("IsIntegrationTest", "true")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.first_name").value("updated"))
