@@ -29,7 +29,7 @@ public class UserToken {
     public UserToken() {
         this.createdAt = LocalDateTime.now();
         this.token = UUID.randomUUID().toString(); // Generate a unique UUID token
-        this.expiresAt = LocalDateTime.now().plusMinutes(2);
+        //this.expiresAt = LocalDateTime.now().plusMinutes(2);
     }
 
     // Getters and Setters
