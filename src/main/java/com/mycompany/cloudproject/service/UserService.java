@@ -116,10 +116,10 @@ public class UserService {
                 logger.error("User is not verified");
                 throw new UnAuthorizedException("User is not verified");
            
-            }else{
+            }
                 BeanUtils.copyProperties(existinguser, userDTO);
                 return userDTO;
-            }
+            
         }
 
         return null;
