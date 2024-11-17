@@ -122,10 +122,11 @@ jobs:
               # Print the extracted AMI ID for debugging purposes
               echo "Extracted AMI ID: $ami_id"
 
-          working-directory: ./packer
-          id: build_custom_image
-          outputs:
-          ami_id: ${{ steps.build_custom_image.outputs.ami_id }}
+        working-directory: ./packer
+        id: build_custom_image
+      
+    outputs:
+      ami_id: ${{ steps.build_custom_image.outputs.ami_id }}
 
   update-launch-template-and-refresh-asg:
     if: github.event.pull_request.merged == true
