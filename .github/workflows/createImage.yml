@@ -184,5 +184,4 @@ jobs:
 
           if [ "$status" == "Failed" ] || [ "$status" == "Cancelled" ]; then
             exit 1
-          fi       
-
+          fi
