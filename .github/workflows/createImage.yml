@@ -27,9 +27,11 @@ jobs:
       INSTANCE_TYPE: ${{ secrets.INSTANCE_TYPE }}
 
     steps:
+      # 1. Checkout the repository
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      # 2. Set up JDK 21 for Maven build
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -37,6 +39,7 @@ jobs:
           distribution: 'corretto'
           architecture: x64
 
+      # 3. Run integration test  
       - name: Start MySQL Service
         run: |
           sudo /etc/init.d/mysql start  # Start MySQL service
@@ -56,15 +59,23 @@ jobs:
           AWS_SNS_ARN: "test"
           DOMAIN_NAME: "dev.manalicloud.me"
 
+      # 4. Build the application artifact
       - name: Build Maven WAR
         run: |
           mvn clean package -DskipTests
+          pwd
           rm -rf imgbuild
-          mkdir imgbuild && cp target/cloudproject-0.0.1-SNAPSHOT.war imgbuild
+          mkdir imgbuild && cp target/cloudproject-0.0.1-SNAPSHOT.war imgbuild   
           cp imgbuild/*.war /home/runner/work/webapp/webapp
           cd /home/runner/work/webapp/webapp && ls -all
           cd /home/runner/work/webapp/webapp/imgbuild && ls -all
+          cd /home/runner/work/webapp/webapp/target && ls -all
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
+      # 6. Set up AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -72,19 +83,23 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # 7. Setup Packer file
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3
         with:
           version: "latest"
 
+      # 8. Initialize Packer
       - name: Initialize Packer
         run: packer init .
         working-directory: ./packer
 
+      # 9. Packer Validate
       - name: Packer Validate
         run: packer validate .
         working-directory: ./packer
 
+      # 10. Build the custom image using Packer
       - name: Build Image
         id: build_image
         run: |
@@ -96,11 +111,13 @@ jobs:
                        -var "subnet_id=${VPC_SUBNET_ID}" \
                        -var "vpc_id=${VPC_ID}" \
                        -var "instance_type=${INSTANCE_TYPE}" \
-                       ami.pkr.hcl
+                       -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
 
+          # Install jq to parse JSON data and map it to the shell variable
           sudo apt-get install jq
           ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
           echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+          # Set the AMI ID as an output for the job
           echo "::set-output name=ami_id::$ami_id"
           echo "AMI ID: $ami_id"
 
@@ -122,13 +139,15 @@ jobs:
       AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
 
     steps:
-      - name: Configure AWS Credentials for Launch Template
+      # 1. Configure AWS Credentials for Launch Template
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # 2. Create a New Launch Template Version with the Latest AMI
       - name: Create New Launch Template Version with Latest AMI
         id: create_launch_template_version
         run: |
@@ -137,7 +156,7 @@ jobs:
           # Create a new version of the launch template with the latest AMI ID
           response=$(aws ec2 create-launch-template-version \
             --launch-template-name ${{ env.LAUNCH_TEMPLATE_NAME }} \
-            --version-description "WebVersion-$(date +%Y%m%d%H%M%S)" \
+            --version-description "WebVersion2" \
             --source-version 1 \
             --launch-template-data '{"ImageId":"${{ needs.build-custom-image.outputs.ami_id }}"}')
           
@@ -149,17 +168,7 @@ jobs:
           # Set the new version as an output so it can be used in the next step
           echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
 
-      - name: Set Latest Launch Template Version as Default
-        run: |
-          launch_template_name="${{ env.LAUNCH_TEMPLATE_NAME }}"
-          latest_version="${{ steps.create_launch_template_version.outputs.latest_version }}"
-          
-          # Set the new version as the default version for the launch template
-          aws ec2 modify-launch-template \
-            --launch-template-name $launch_template_name \
-            --default-version $latest_version \
-            --output json
-
+      # 3. Update Auto Scaling Group to Use Latest Launch Template Version
       - name: Update Auto Scaling Group to Use Latest Launch Template Version
         id: update_asg
         run: |
@@ -171,11 +180,13 @@ jobs:
             --auto-scaling-group-name ${{ env.AUTO_SCALING_GROUP_NAME }} \
             --launch-template "LaunchTemplateName=${{ env.LAUNCH_TEMPLATE_NAME }},Version=${latest_version}"
         
+      # 4. Trigger instance refresh on Auto Scaling Group
       - name: Trigger Instance Refresh
         run: |
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ${{ env.AUTO_SCALING_GROUP_NAME }}
 
+      # 5. Wait for the instance refresh to complete
       - name: Wait for Instance Refresh to Complete
         run: |
           status=$(aws autoscaling describe-instance-refreshes \
