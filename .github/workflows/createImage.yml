@@ -62,16 +62,14 @@ jobs:
       # 4. Build the application artifact
       - name: Build Maven WAR
         run: |
-             mvn clean package -DskipTests
-             pwd
-             rm -rf imgbuild
-             mkdir imgbuild && cp target/cloudproject-0.0.1-SNAPSHOT.war imgbuild   
-             cp imgbuild/*.war /home/runner/work/webapp/webapp
-             cd /home/runner/work/webapp/webapp && ls -all
-             cd /home/runner/work/webapp/webapp/imgbuild && ls -all
-             cd /home/runner/work/webapp/webapp/target && ls -all
-             
-             
+          mvn clean package -DskipTests
+          pwd
+          rm -rf imgbuild
+          mkdir imgbuild && cp target/cloudproject-0.0.1-SNAPSHOT.war imgbuild   
+          cp imgbuild/*.war /home/runner/work/webapp/webapp
+          cd /home/runner/work/webapp/webapp && ls -all
+          cd /home/runner/work/webapp/webapp/imgbuild && ls -all
+          cd /home/runner/work/webapp/webapp/target && ls -all
         env:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -85,7 +83,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 7. Setup Packer fie
+      # 7. Setup Packer file
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3
         with:
@@ -112,20 +110,20 @@ jobs:
                        -var "subnet_id=${VPC_SUBNET_ID}" \
                        -var "vpc_id=${VPC_ID}" \
                        -var "instance_type=${INSTANCE_TYPE}" \
-                      -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
+                       -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
 
-              # Install jq to parse JSON data and map it to the shell variable
-                sudo apt-get install jq
-                ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
-                echo "AMI_ID=$ami_id" >> $GITHUB_ENV
-           
-              # Print the extracted AMI ID for debugging purposes
-              echo "Extracted AMI ID: $ami_id"
+          # Install jq to parse JSON data and map it to the shell variable
+          sudo apt-get install jq
+          ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+          echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+          # Print the extracted AMI ID for debugging purposes
+          echo "Extracted AMI ID: $ami_id"
 
-          working-directory: ./packer
-          id: build_custom_image
-          outputs:
-          ami_id: ${{ steps.build_custom_image.outputs.ami_id }}
+        working-directory: ./packer
+        id: build_custom_image
+
+    outputs:
+      ami_id: ${{ steps.build_custom_image.outputs.ami_id }}
 
   update-launch-template-and-refresh-asg:
     if: github.event.pull_request.merged == true
@@ -140,7 +138,7 @@ jobs:
       AUTO_SCALING_GROUP_NAME: "terraform-2024111605351583800000000a"
 
     steps:
-      # 1. Configure AWS Credentials
+      # 1. Configure AWS Credentials for Launch Template
       - name: Configure AWS Credentials for Launch Template
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -148,7 +146,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-       # 2. Update the Launch Template with the new AMI ID
+      # 2. Update the Launch Template with the new AMI ID
       - name: Update Launch Template
         run: |
           # Print the AMI ID from the build-custom-image job for debugging
@@ -166,7 +164,7 @@ jobs:
         run: |
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ${{ env.AUTO_SCALING_GROUP_NAME }}
-          
+
       # 5. Wait for the instance refresh to complete
       - name: Wait for Instance Refresh to Complete
         run: |
