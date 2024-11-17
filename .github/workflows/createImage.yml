@@ -113,22 +113,14 @@ jobs:
                        -var "vpc_id=${VPC_ID}" \
                        -var "instance_type=${INSTANCE_TYPE}" \
                       -var "aws_devuser=${AWS_DEVUSER}" ami.pkr.hcl
-          
-           # Install jq to parse the manifest.json file
-              sudo apt-get update
-              sudo apt-get install -y jq
 
-              # Output the contents of the manifest.json for debugging
-              echo "Printing the contents of manifest.json for debugging:"
-              cat manifest.json
-              
-              # Extract the AMI ID from the manifest.json using jq
-              ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
-
-              # Output the AMI ID and save it as a GitHub environment variable
-              echo "AMI_ID=$ami_id" >> $GITHUB_ENV
-              
-              echo $(ami_id)
+              # Install jq to parse JSON data and map it to the shell variable
+                sudo apt-get install jq
+                ami_id=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+                echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+           
+              # Print the extracted AMI ID for debugging purposes
+              echo "Extracted AMI ID: $ami_id"
 
         working-directory: ./packer
 
