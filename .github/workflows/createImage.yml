@@ -122,7 +122,10 @@ jobs:
               # Print the extracted AMI ID for debugging purposes
               echo "Extracted AMI ID: $ami_id"
 
-        working-directory: ./packer
+          working-directory: ./packer
+          id: build_custom_image
+          outputs:
+          ami_id: ${{ steps.build_custom_image.outputs.ami_id }}
 
   update-launch-template-and-refresh-asg:
     if: github.event.pull_request.merged == true
@@ -145,14 +148,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 3. Update the Launch Template with the new AMI
+       # 2. Update the Launch Template with the new AMI ID
       - name: Update Launch Template
         run: |
+          # Print the AMI ID from the build-custom-image job for debugging
+          echo "AMI_ID from build-custom-image job: ${{ needs.build-custom-image.outputs.ami_id }}"
+          
+          # Use the AMI ID to update the launch template
           aws ec2 create-launch-template-version \
             --launch-template-name ${{ env.LAUNCH_TEMPLATE_NAME }} \
             --version-description "WebVersion2" \
             --source-version 1 \
-            --launch-template-data '{"ImageId":"${{ env.AMI_ID }}"}'
+            --launch-template-data '{"ImageId":"${{ needs.build-custom-image.outputs.ami_id }}"}'
 
       # 4. Trigger instance refresh on Auto Scaling Group
       - name: Trigger Instance Refresh
