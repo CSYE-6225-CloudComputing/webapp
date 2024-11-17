@@ -199,6 +199,10 @@ public class ImageService {
 
         if (existinguser != null && EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
 
+            if(!existinguser.isActive()){
+                logger.error("User is not verified");
+                throw new UnAuthorizedException("Error occurred while validating credentials");
+            }
             long startTime = getCurrentTimeMillis();
 
             Optional<Image> optionalImage = imageDAO.getImageByUserId(existinguser.getId()); // Implement this in your
@@ -247,6 +251,11 @@ public class ImageService {
 
         User existingUser = userDAO.checkExistingUser(email);
         if (existingUser == null || !EncryptionUtility.getDecryptedPassword(password, existingUser.getPassword())) {
+            throw new UnAuthorizedException("Error occurred while validating credentials");
+        }
+
+        if(!existingUser.isActive()){
+            logger.error("User is not verified");
             throw new UnAuthorizedException("Error occurred while validating credentials");
         }
 
