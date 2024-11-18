@@ -25,6 +25,7 @@ import com.mycompany.cloudproject.dto.ImageResponseDTO;
 
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.exceptions.UserCustomExceptions;
+import com.mycompany.cloudproject.exceptions.UserUnverifiedException;
 import com.mycompany.cloudproject.exceptions.NotFoundException;
 import com.mycompany.cloudproject.model.Image;
 import com.mycompany.cloudproject.model.User;
@@ -83,7 +84,7 @@ public class ImageService {
 
         if(!existinguser.isActive()){
             logger.error("User is not verified");
-            throw new UnAuthorizedException("Error occurred while validating credentials");
+            throw new UserUnverifiedException("Error occurred while validating credentials");
         }
        
 
@@ -166,7 +167,7 @@ public class ImageService {
     }
 
     public ImageResponseDTO getProfileDetails(HttpServletRequest request)
-            throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
+            throws UnAuthorizedException, UserCustomExceptions, NotFoundException, UserUnverifiedException {
 
         ImageResponseDTO imageResponseDTO = null;
         if (request.getContentLength() > 0)
@@ -201,7 +202,7 @@ public class ImageService {
 
             if(!existinguser.isActive()){
                 logger.error("User is not verified");
-                throw new UnAuthorizedException("Error occurred while validating credentials");
+                throw new UserUnverifiedException("User is not verified");
             }
             long startTime = getCurrentTimeMillis();
 
@@ -227,7 +228,7 @@ public class ImageService {
         return imageResponseDTO;
     }
 
-    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions, NotFoundException {
+    public void deleteAllImagesForUser(HttpServletRequest request) throws UnAuthorizedException, UserCustomExceptions, NotFoundException, UserUnverifiedException {
         logger.info("Checking delete user images request");
 
         if (request.getContentLength() > 0)
@@ -256,7 +257,7 @@ public class ImageService {
 
         if(!existingUser.isActive()){
             logger.error("User is not verified");
-            throw new UnAuthorizedException("Error occurred while validating credentials");
+            throw new UserUnverifiedException("Error occurred while validating credentials");
         }
 
         List<Image> userImages = null;

@@ -5,6 +5,7 @@ import com.mycompany.cloudproject.dao.UserTokenDAO;
 import com.mycompany.cloudproject.dto.UserDTO;
 import com.mycompany.cloudproject.exceptions.UnAuthorizedException;
 import com.mycompany.cloudproject.exceptions.UserCustomExceptions;
+import com.mycompany.cloudproject.exceptions.UserUnverifiedException;
 import com.mycompany.cloudproject.model.User;
 import com.mycompany.cloudproject.model.UserToken;
 import com.mycompany.cloudproject.utilities.EncryptionUtility;
@@ -114,7 +115,7 @@ public class UserService {
         if (existinguser != null && EncryptionUtility.getDecryptedPassword(password, existinguser.getPassword())) {
             if( !isIntegrationTests && !isVerified(existinguser)){
                 logger.error("User is not verified");
-                throw new UnAuthorizedException("User is not verified");
+                throw new UserUnverifiedException("User is not verified");
            
             }
                 BeanUtils.copyProperties(existinguser, userDTO);
@@ -126,7 +127,7 @@ public class UserService {
 
     }
 
-    public void updateUserDetails(UserDTO userDTO, HttpServletRequest request) throws UserCustomExceptions, UnAuthorizedException {
+    public void updateUserDetails(UserDTO userDTO, HttpServletRequest request) throws UserCustomExceptions, UnAuthorizedException, UserUnverifiedException {
 
         //check for proper request
         logger.info("checkig update user request");
@@ -155,7 +156,7 @@ public class UserService {
             Boolean isIntegrationTests = request.getHeader("IsIntegrationTest") != null && Boolean.parseBoolean((String) request.getHeader("IsIntegrationTest"));
             if( !isIntegrationTests && !isVerified(existinguser)){
                 logger.error("User is not verified");
-                throw new UnAuthorizedException("User is unauthorized");
+                throw new UserUnverifiedException("User is not verified");
             }
             
             existinguser.setPassword(EncryptionUtility.getEncryptedPassword(userDTO.getPassword()));
