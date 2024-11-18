@@ -18,6 +18,9 @@ jobs:
       PROFILE: ${{ secrets.PROFILE }}
       AWS_DEVUSER: ${{ secrets.AWS_DEVUSER }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       AWS_DEMOUSER: ${{ secrets.AWS_DEMOUSER }}
       VPC_SUBNET_ID: ${{ secrets.SUBNET_ID }}
       VPC_ID: ${{ secrets.VPC_ID }}
