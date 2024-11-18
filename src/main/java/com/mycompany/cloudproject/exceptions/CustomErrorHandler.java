@@ -44,6 +44,10 @@ public class CustomErrorHandler {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @ExceptionHandler(UserUnverifiedException.class)
+    public ResponseEntity<Void> handleUnverfied(Exception ex) {
+        return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
     @ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<Void> handleUnAuthorizedException(UnAuthorizedException ex) {
