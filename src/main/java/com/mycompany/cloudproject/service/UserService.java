@@ -215,7 +215,7 @@ public class UserService {
         UserToken userToken = userTokenDAO.findUserToken(user,token);
 
          // Check if the token is still valid (expiry time is greater than the current time)
-         if (userToken.getExpiresAt().isAfter(java.time.LocalDateTime.now())) {
+         if (userToken!=null && userToken.getExpiresAt().isAfter(java.time.LocalDateTime.now())) {
             // Token is valid, mark it as verified
             logger.info("validating token");
             user.setActive(true);
