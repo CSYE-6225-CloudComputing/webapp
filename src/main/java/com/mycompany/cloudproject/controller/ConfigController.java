@@ -24,7 +24,7 @@ public class ConfigController {
     @Autowired
     private StatsDClient statsd;
 
-    @GetMapping("/healthz")
+    @GetMapping({"/healthz", "/cicd"})
     @ResponseBody
     public ResponseEntity<String> getConfig(@RequestBody(required = false) String payload, HttpServletResponse response,
             HttpServletRequest request) {
