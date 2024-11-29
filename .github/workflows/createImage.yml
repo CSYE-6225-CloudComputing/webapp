@@ -3,7 +3,7 @@ name: build-image-creation
 on:
   push:
     branches:
-      - testdemo8.2
+      - testdemo8.1
 
 jobs:
   build-custom-image:
