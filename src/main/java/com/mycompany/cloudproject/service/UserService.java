@@ -195,7 +195,7 @@ public class UserService {
 
         userDAO.createToken(token);
 
-        String activationLink = "http://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
+        String activationLink = "https://" + domainName + "/verify?user="+ user.getEmail()+ "&token=" + token.getToken();
 
         snsService.publishMessage(user.getEmail(), token.getToken(), activationLink);
 
