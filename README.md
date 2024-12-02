@@ -67,8 +67,17 @@ To build and deploy the web application locally, follow these steps:
 - **Endpoint:** `/v1/user/self`
 - **Method:** `PUT`
 
-#### 4. Unsupported Methods for `/v1/user`
+
+#### 4. Upload User Profile
+- **Endpoint:** `/v1/user/self/pic`
+- **Method:** `POST`
+
+#### 5. Get User Profile
+- **Endpoint:** `/v1/user/self/pic`
+- **Method:** `GET`
+
+#### 6. Unsupported Methods for `/v1/user`
 - **Methods:** `GET`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`
 
-#### 5. Unsupported Methods for `/v1/user/self`
+#### 7. Unsupported Methods for `/v1/user/self`
 - **Methods:** `POST`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`
